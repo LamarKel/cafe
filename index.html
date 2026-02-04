@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Atalia Café - Tu café favorito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Atalia Café - Café recién preparado, panadería artesanal y postres caseros en un ambiente acogedor.">
+    
+    <!-- Preconexiones para mejorar performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Skip to main content para accesibilidad -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+    
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <nav class="navbar" aria-label="Navegación principal">
+            <a href="/" class="logo" aria-label="Atalia Café - Inicio">
+                <span class="logo-text">Atalia Café</span>
+            </a>
+            
+            <button class="hamburger" id="hamburger" aria-label="Menú de navegación" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#inicio" class="nav-link">Inicio</a></li>
+                <li><a href="#menu" class="nav-link">Menú</a></li>
+                <li><a href="#diferencial" class="nav-link">Experiencia</a></li>
+                <li><a href="#orden" class="nav-link">Ordenar</a></li>
+                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+        </nav>
+        
+        <div class="hero" id="inicio">
+            <div class="hero-content">
+                <h1 class="hero-title">Tu café favorito, recién preparado todos los días</h1>
+                <div class="hero-buttons">
+                    <a href="#menu" class="btn btn-primary">Ver menú</a>
+                    <a href="#orden" class="btn btn-secondary">Ordenar online</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ================= MAIN CONTENT ================= -->
+    <main id="main-content">
+        <!-- ================= MENÚ ================= -->
+        <section id="menu" class="section menu-section" aria-labelledby="menu-title">
+            <div class="container">
+                <h2 id="menu-title" class="section-title">Nuestro Menú</h2>
+                <p class="section-subtitle">Selecciona una categoría para ver nuestros productos</p>
+                
+                <div class="menu-tabs">
+                    <div class="tabs" role="tablist" aria-label="Categorías del menú">
+                        <button class="tab-button active" data-category="cafes" id="tab-cafes" role="tab" aria-selected="true" aria-controls="cafes-panel">
+                            Cafés
+                        </button>
+                        <button class="tab-button" data-category="bebidas" id="tab-bebidas" role="tab" aria-selected="false" aria-controls="bebidas-panel">
+                            Bebidas Frías
+                        </button>
+                        <button class="tab-button" data-category="panaderia" id="tab-panaderia" role="tab" aria-selected="false" aria-controls="panaderia-panel">
+                            Panadería
+                        </button>
+                        <button class="tab-button" data-category="postres" id="tab-postres" role="tab" aria-selected="false" aria-controls="postres-panel">
+                            Postres
+                        </button>
+                    </div>
+                    
+                    <a href="menu.html" class="menu-more-link">Ver menú completo</a>
+                </div>
+                
+                <!-- Panel de cada categoría -->
+                <div id="cafes-panel" class="tab-panel active" role="tabpanel" aria-labelledby="tab-cafes">
+                    <div class="menu-grid">
+                        <!-- Las tarjetas se generarán dinámicamente con JS -->
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a href="menu.html" class="btn btn-primary">Ver menú completo</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ================= DIFERENCIAL ================= -->
+        <section id="diferencial" class="section diferencial-section" aria-labelledby="diferencial-title">
+            <div class="container">
+                <div class="diferencial-grid">
+                    <div class="diferencial-content">
+                        <span class="section-badge">Más allá del café</span>
+                        <h2 id="diferencial-title" class="section-title">Saborea la diferencia</h2>
+                        <p class="diferencial-lead">Auténtico en cada grano, en cada rostro, en cada instante.</p>
+                        
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="feature-icon fas fa-mug-hot" aria-hidden="true"></i>
+                                <div class="feature-text">
+                                    <h3>Café diario</h3>
+                                    <p>Café recién preparado, listo para llevar</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <i class="feature-icon fas fa-bag-shopping" aria-hidden="true"></i>
+                                <div class="feature-text">
+                                    <h3>Dulces caseros</h3>
+                                    <p>Acompaña tu café con nuestros dulces hechos en casa</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <i class="feature-icon fas fa-birthday-cake" aria-hidden="true"></i>
+                                <div class="feature-text">
+                                    <h3>Pasíon por lo artesanal</h3>
+                                    <p>Cada producto hecho con amor y dedicación</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#orden" class="btn btn-primary">Ordenar ahora</a>
+                    </div>
+                    
+                    <div class="diferencial-image">
+                        <img src="images/cafe4.jfif" alt="Interior acogedor de Atalia Café" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ================= ORDEN ONLINE ================= -->
+        <section id="orden" class="section order-section" aria-labelledby="order-title">
+            <div class="container">
+                <div class="order-grid">
+                    <div class="order-image">
+                        <img src="images/Delivery.jfif" alt="Servicio de delivery de Atalia Café" loading="lazy">
+                    </div>
+                    
+                    <div class="order-content">
+                        <h2 id="order-title">Ordena en línea ahora</h2>
+                        <p>Disfruta nuestro café desde donde estés con nuestros socios de delivery</p>
+                        
+                        <div class="delivery-partners">
+                            <a href="#" class="delivery-partner" aria-label="Ordenar por Uber Eats">
+                                <img src="images/ubereats.png" alt="Uber Eats" loading="lazy">
+                            </a>
+                            <a href="#" class="delivery-partner" aria-label="Ordenar por Rappi">
+                                <img src="images/rappi.png" alt="Rappi" loading="lazy">
+                            </a>
+                            <a href="#" class="delivery-partner" aria-label="Ordenar por PedidosYa">
+                                <img src="images/rappi.png" alt="PedidosYa" loading="lazy">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ================= RESEÑAS ================= -->
+        <section class="section reviews-section" aria-labelledby="reviews-title">
+            <div class="container">
+                <h2 id="reviews-title" class="section-title">Lo que dicen nuestros clientes</h2>
+                
+                <div id="reviews-container" class="reviews-container">
+                    <!-- Las reseñas se cargarán dinámicamente -->
+                    <div class="loading-reviews">
+                        <div class="spinner"></div>
+                        <p>Cargando reseñas...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ================= CONTACTO ================= -->
+        <section id="contacto" class="section contact-section" aria-labelledby="contact-title">
+            <div class="container">
+                <h2 id="contact-title" class="section-title">Visítanos</h2>
+                
+                <div class="contact-grid">
+                    <div class="map-container">
+                        <div class="map-wrapper">
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=0x89c2f92dea455555:0x11a996cd1d60a962"
+                                width="100%" 
+                                height="400"
+                                style="border:0;" 
+                                allowfullscreen 
+                                loading="lazy"
+                                title="Ubicación de Atalia Café en Google Maps">
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="location-image">
+                        <img src="images/local.PNG" alt="Fachada de Atalia Café" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer" aria-label="Pie de página">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="/" class="footer-logo" aria-label="Atalia Café - Inicio">
+                        <span class="logo-text">Atalia Café</span>
+                    </a>
+                    <p class="footer-tagline">Café de calidad desde 2023</p>
+                </div>
+                
+                <nav class="footer-nav" aria-label="Enlaces del pie de página">
+                    <div class="footer-nav-group">
+                        <h3 class="footer-nav-title">Navegación</h3>
+                        <ul class="footer-nav-list">
+                            <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="#menu">Menú</a></li>
+                            <li><a href="#diferencial">Experiencia</a></li>
+                            <li><a href="#orden">Ordenar</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-nav-group">
+                        <h3 class="footer-nav-title">Legal</h3>
+                        <ul class="footer-nav-list">
+                            <li><a href="#">Términos y condiciones</a></li>
+                            <li><a href="#">Política de privacidad</a></li>
+                            <li><a href="#">Política de reembolso</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                
+                <div class="footer-contact">
+                    <h3 class="footer-nav-title">Síguenos</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook de Atalia Café">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram de Atalia Café">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="mailto:info@atalia.cafe" class="social-link" aria-label="Enviar correo a Atalia Café">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Atalia Café. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="js/main.js" defer></script>
+    <script src="js/reviews.js" defer></script>
+</body>
+</html>

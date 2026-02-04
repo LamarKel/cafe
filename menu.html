@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú - Atalia Café</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Descubre nuestro menú completo de cafés, bebidas frías, panadería y postres en Atalia Café.">
+    
+    <!-- Preconexiones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/menu.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body class="menu-page">
+    <!-- Skip link -->
+    <a href="#main-menu" class="skip-link">Saltar al menú principal</a>
+    
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <nav class="navbar" aria-label="Navegación principal">
+            <a href="index.html" class="logo" aria-label="Atalia Café - Inicio">
+                <span class="logo-text">Atalia Café</span>
+            </a>
+            
+            <button class="hamburger" id="hamburger" aria-label="Menú de navegación" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="menu.html" class="nav-link active">Menú</a></li>
+                <li><a href="index.html#diferencial" class="nav-link">Experiencia</a></li>
+                <li><a href="index.html#orden" class="nav-link">Ordenar</a></li>
+                <li><a href="index.html#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- ================= MAIN CONTENT ================= -->
+    <main id="main-menu">
+        <!-- ================= HERO MENÚ ================= -->
+        <!-- ================= SUBHEADER DEL MENÚ (Minimalista) ================= -->
+<div class="menu-subheader">
+    <div class="container">
+        <div class="subheader-content">
+            <div class="subheader-text">
+                <h1 class="subheader-title">Nuestro Menú</h1>
+                <p class="subheader-subtitle">Descubre nuestras bebidas y alimentos favoritos</p>
+            </div>
+            
+            <div class="subheader-actions">
+                <!-- Selector de tienda muy compacto -->
+                <div class="store-selector-compact">
+                    <div class="store-selector-compact-header">
+                        <i class="fas fa-store"></i>
+                        <span>Para ver disponibilidad</span>
+                    </div>
+                    <button class="store-selector-compact-btn" id="store-selector">
+                        <span id="store-selected-text">Elige una tienda</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <!-- ================= MENÚ PRINCIPAL ================= -->
+        <div class="menu-container">
+            <!-- Sidebar de categorías -->
+            <aside class="menu-sidebar" aria-label="Categorías del menú">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Favoritos</h3>
+                        <ul class="sidebar-list">
+                            <li><a href="#trending" class="sidebar-link active" data-category="trending">
+                                <i class="fas fa-fire"></i> Trending
+                            </a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Bebidas</h3>
+                        <ul class="sidebar-list">
+                            <li><a href="#protein" class="sidebar-link" data-category="protein">
+                                <i class="fas fa-dumbbell"></i> Proteínas
+                            </a></li>
+                            <li><a href="#hot-coffee" class="sidebar-link" data-category="hot-coffee">
+                                <i class="fas fa-mug-hot"></i> Café Caliente
+                            </a></li>
+                            <li><a href="#cold-coffee" class="sidebar-link" data-category="cold-coffee">
+                                <i class="fas fa-glass-water"></i> Café Frío
+                            </a></li>
+                            <li><a href="#matcha" class="sidebar-link" data-category="matcha">
+                                <i class="fas fa-leaf"></i> Matcha
+                            </a></li>
+                            <li><a href="#hot-tea" class="sidebar-link" data-category="hot-tea">
+                                <i class="fas fa-mug-saucer"></i> Té Caliente
+                            </a></li>
+                            <li><a href="#cold-tea" class="sidebar-link" data-category="cold-tea">
+                                <i class="fas fa-glass-martini-alt"></i> Té Frío
+                            </a></li>
+                            <li><a href="#refreshers" class="sidebar-link" data-category="refreshers">
+                                <i class="fas fa-glass-whiskey"></i> Refreshers
+                            </a></li>
+                            <li><a href="#frappuccino" class="sidebar-link" data-category="frappuccino">
+                                <i class="fas fa-blender"></i> Frappuccino®
+                            </a></li>
+                            <li><a href="#hot-chocolate" class="sidebar-link" data-category="hot-chocolate">
+                                <i class="fas fa-mug-hot"></i> Chocolate & Más
+                            </a></li>
+                            <li><a href="#bottled" class="sidebar-link" data-category="bottled">
+                                <i class="fas fa-wine-bottle"></i> Bebidas Embotelladas
+                            </a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Alimentos</h3>
+                        <ul class="sidebar-list">
+                            <li><a href="#bakery" class="sidebar-link" data-category="bakery">
+                                <i class="fas fa-bread-slice"></i> Panadería
+                            </a></li>
+                            <li><a href="#sandwiches" class="sidebar-link" data-category="sandwiches">
+                                <i class="fas fa-hamburger"></i> Sándwiches
+                            </a></li>
+                            <li><a href="#desserts" class="sidebar-link" data-category="desserts">
+                                <i class="fas fa-ice-cream"></i> Postres
+                            </a></li>
+                            <li><a href="#snacks" class="sidebar-link" data-category="snacks">
+                                <i class="fas fa-cookie-bite"></i> Snacks
+                            </a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </aside>
+            
+            <!-- Contenido principal del menú -->
+            <div class="menu-content">
+                <!-- Trending -->
+                <section id="trending" class="menu-category active" data-category="trending">
+                    <div class="category-header">
+                        <h2 class="category-title">Trending</h2>
+                        <p class="category-description">Los favoritos de nuestros clientes</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Café Caliente -->
+                <section id="hot-coffee" class="menu-category" data-category="hot-coffee">
+                    <div class="category-header">
+                        <h2 class="category-title">Café Caliente</h2>
+                        <p class="category-description">Nuestros cafés preparados al momento</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Café Frío -->
+                <section id="cold-coffee" class="menu-category" data-category="cold-coffee">
+                    <div class="category-header">
+                        <h2 class="category-title">Café Frío</h2>
+                        <p class="category-description">Refrescantes y perfectos para cualquier momento</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Matcha -->
+                <section id="matcha" class="menu-category" data-category="matcha">
+                    <div class="category-header">
+                        <h2 class="category-title">Matcha</h2>
+                        <p class="category-description">Tradición japonesa en cada sorbo</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Té Caliente -->
+                <section id="hot-tea" class="menu-category" data-category="hot-tea">
+                    <div class="category-header">
+                        <h2 class="category-title">Té Caliente</h2>
+                        <p class="category-description">Infusiones aromáticas y reconfortantes</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Té Frío -->
+                <section id="cold-tea" class="menu-category" data-category="cold-tea">
+                    <div class="category-header">
+                        <h2 class="category-title">Té Frío</h2>
+                        <p class="category-description">Refrescantes infusiones heladas</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Refreshers -->
+                <section id="refreshers" class="menu-category" data-category="refreshers">
+                    <div class="category-header">
+                        <h2 class="category-title">Refreshers</h2>
+                        <p class="category-description">Bebidas frutales refrescantes</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Frappuccino -->
+                <section id="frappuccino" class="menu-category" data-category="frappuccino">
+                    <div class="category-header">
+                        <h2 class="category-title">Frappuccino® Blended Beverage</h2>
+                        <p class="category-description">Bebidas cremosas y heladas</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Chocolate & Más -->
+                <section id="hot-chocolate" class="menu-category" data-category="hot-chocolate">
+                    <div class="category-header">
+                        <h2 class="category-title">Chocolate, Limonada & Más</h2>
+                        <p class="category-description">Bebidas clásicas y reconfortantes</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Bebidas Embotelladas -->
+                <section id="bottled" class="menu-category" data-category="bottled">
+                    <div class="category-header">
+                        <h2 class="category-title">Bebidas Embotelladas</h2>
+                        <p class="category-description">Para llevar</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Proteínas -->
+                <section id="protein" class="menu-category" data-category="protein">
+                    <div class="category-header">
+                        <h2 class="category-title">Bebidas Proteínicas</h2>
+                        <p class="category-description">Energía y nutrición en cada sorbo</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Panadería -->
+                <section id="bakery" class="menu-category" data-category="bakery">
+                    <div class="category-header">
+                        <h2 class="category-title">Panadería</h2>
+                        <p class="category-description">Fresca y artesanal</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Sándwiches -->
+                <section id="sandwiches" class="menu-category" data-category="sandwiches">
+                    <div class="category-header">
+                        <h2 class="category-title">Sándwiches</h2>
+                        <p class="category-description">Deliciosos y satisfactorios</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Postres -->
+                <section id="desserts" class="menu-category" data-category="desserts">
+                    <div class="category-header">
+                        <h2 class="category-title">Postres</h2>
+                        <p class="category-description">Dulces tentaciones</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Snacks -->
+                <section id="snacks" class="menu-category" data-category="snacks">
+                    <div class="category-header">
+                        <h2 class="category-title">Snacks</h2>
+                        <p class="category-description">Pequeños gustos</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <!-- Las tarjetas se generarán con JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo" aria-label="Atalia Café - Inicio">
+                        <span class="logo-text">Atalia Café</span>
+                    </a>
+                    <p class="footer-tagline">Café de calidad desde 2023</p>
+                </div>
+                
+                <nav class="footer-nav" aria-label="Enlaces del pie de página">
+                    <div class="footer-nav-group">
+                        <h3 class="footer-nav-title">Navegación</h3>
+                        <ul class="footer-nav-list">
+                            <li><a href="index.html">Inicio</a></li>
+                            <li><a href="menu.html">Menú</a></li>
+                            <li><a href="index.html#orden">Ordenar</a></li>
+                            <li><a href="index.html#contacto">Contacto</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-nav-group">
+                        <h3 class="footer-nav-title">Legal</h3>
+                        <ul class="footer-nav-list">
+                            <li><a href="#">Términos y condiciones</a></li>
+                            <li><a href="#">Política de privacidad</a></li>
+                            <li><a href="#">Política de reembolso</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                
+                <div class="footer-contact">
+                    <h3 class="footer-nav-title">Síguenos</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook de Atalia Café">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram de Atalia Café">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="mailto:info@atalia.cafe" class="social-link" aria-label="Enviar correo a Atalia Café">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Atalia Café. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modal para selector de tienda -->
+    <div class="modal" id="store-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Elige una tienda</h3>
+                <button class="modal-close" id="modal-close" aria-label="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="stores-list">
+                    <div class="store-item">
+                        <h4 class="store-name">Atalia Café Centro</h4>
+                        <p class="store-address">Av. Principal #123, Santo Domingo</p>
+                        <p class="store-hours"><i class="fas fa-clock"></i> 7:00 AM - 10:00 PM</p>
+                        <button class="btn btn-primary select-store-btn" data-store="1">Seleccionar</button>
+                    </div>
+                    <div class="store-item">
+                        <h4 class="store-name">Atalia Café Norte</h4>
+                        <p class="store-address">Calle Comercial #456, Santiago</p>
+                        <p class="store-hours"><i class="fas fa-clock"></i> 6:30 AM - 9:30 PM</p>
+                        <button class="btn btn-primary select-store-btn" data-store="2">Seleccionar</button>
+                    </div>
+                    <div class="store-item">
+                        <h4 class="store-name">Atalia Café Este</h4>
+                        <p class="store-address">Plaza del Sol #789, Punta Cana</p>
+                        <p class="store-hours"><i class="fas fa-clock"></i> 8:00 AM - 11:00 PM</p>
+                        <button class="btn btn-primary select-store-btn" data-store="3">Seleccionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="product-modal" id="productModal">
+    <div class="modal-product-content">
+        <!-- Header con imagen -->
+        <div class="modal-product-header">
+            <img src="product-image.jpg" alt="Iced Matcha Latte">
+            <button class="modal-close-btn" aria-label="Cerrar modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Contenido con scroll -->
+        <div class="modal-product-scrollable">
+            <div class="modal-product-body">
+                <!-- Información del producto -->
+                <div class="modal-product-info">
+                    <h2 class="modal-product-title">Iced Matcha Latte</h2>
+                    <div class="modal-product-price">RD$ 195</div>
+                    <p class="modal-product-description">
+                        Matcha premium con leche y hielo. Preparado con matcha de grado ceremonial 
+                        batido a mano para una textura suave y cremosa.
+                    </p>
+                </div>
+                
+                <!-- Sección de tamaños (sin duplicados) -->
+                <div class="size-section">
+                    <h3 class="size-title">
+                        <i class="fas fa-ruler"></i>
+                        Tamaño
+                    </h3>
+                    <div class="size-options">
+                        <div class="size-option selected" data-size="pequeno">
+                            Pequeño
+                        </div>
+                        <div class="size-option" data-size="mediano">
+                            Mediano
+                        </div>
+                        <div class="size-option" data-size="grande">
+                            Grande
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección de personalizaciones -->
+                <div class="customization-section">
+                    <h3 class="customization-title">
+                        <i class="fas fa-sliders-h"></i>
+                        Tipo de Leche
+                    </h3>
+                    <div class="customization-options">
+                        <div class="customization-option selected" data-milk="entera">
+                            Entera
+                        </div>
+                        <div class="customization-option" data-milk="deslactosada">
+                            Deslactosada
+                        </div>
+                        <div class="customization-option" data-milk="almendra">
+                            Almendra
+                        </div>
+                        <div class="customization-option" data-milk="avena">
+                            Avena
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Selector de cantidad -->
+                <div class="quantity-section">
+                    <h3 class="customization-title">
+                        <i class="fas fa-sort-amount-up"></i>
+                        Cantidad
+                    </h3>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn minus" aria-label="Reducir cantidad">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="quantity-display">1</span>
+                        <button class="quantity-btn plus" aria-label="Aumentar cantidad">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Información adicional (ejemplo de contenido largo) -->
+                <div class="additional-info">
+                    <h3 class="customization-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información Nutricional
+                    </h3>
+                    <p>Contenido aproximado por porción: 120 calorías, 4g de proteína, 18g de carbohidratos.</p>
+                    <p>El matcha contiene antioxidantes naturales y proporciona energía sostenida sin el bajón de cafeína.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer fijo -->
+        <div class="modal-product-footer">
+            <button class="modal-add-btn">
+                <i class="fas fa-shopping-cart"></i>
+                Añadir - RD$ 195
+            </button>
+            <button class="modal-customize-btn">
+                <i class="fas fa-star"></i>
+                Favorito
+            </button>
+        </div>
+    </div>
+</div>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>
