@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Carrito - Atalia Café</title>
+
+    <!-- Usa tu css principal si ya lo tienes -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- y el css del menú si te sirve -->
+    <link rel="stylesheet" href="menu.css" />
+
+    <!-- Estilos específicos del carrito -->
+    <style>
+        :root {
+            --green: #6B7F5A;
+            --coffee: #6B4A3A;
+            --cream: #F6F1EB;
+            --dark: #2E2E2E;
+            --white: #FFFFFF;
+            --radius: 16px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, .12);
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--dark);
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 22px 16px;
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .cart-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--coffee);
+        }
+
+        .cart-subtitle {
+            margin: 0;
+            opacity: .85;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.6fr .9fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-h {
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-h h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .muted {
+            opacity: .75;
+            font-size: 14px;
+        }
+
+        .items {
+            padding: 10px;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 86px 1fr auto;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 14px;
+        }
+
+        .item+.item {
+            border-top: 1px solid rgba(0, 0, 0, .06);
+            border-radius: 0;
+            padding-top: 14px;
+        }
+
+        .thumb {
+            width: 86px;
+            height: 86px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, .04);
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .name {
+            font-weight: 800;
+            margin: 0 0 4px;
+        }
+
+        .meta {
+            font-size: 13px;
+            opacity: .78;
+            margin: 0;
+        }
+
+        .price {
+            font-weight: 900;
+            color: var(--coffee);
+            margin-top: 8px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            min-width: 160px;
+        }
+
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, .04);
+            border-radius: 999px;
+            padding: 8px 10px;
+        }
+
+        .qbtn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 0;
+            background: var(--white);
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, .10);
+            font-weight: 900;
+        }
+
+        .qnum {
+            min-width: 18px;
+            text-align: center;
+            font-weight: 900;
+        }
+
+        .linkbtn {
+            border: 0;
+            background: transparent;
+            color: var(--dark);
+            opacity: .8;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .linkbtn:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .summary {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--coffee);
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, .08);
+            margin-top: 6px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 14px 14px;
+            cursor: pointer;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform .12s ease;
+        }
+
+        .btn:active {
+            transform: scale(.98);
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-ghost {
+            background: rgba(107, 127, 90, .12);
+            color: var(--dark);
+        }
+
+        .empty {
+            padding: 26px 16px;
+            text-align: center;
+        }
+
+        .empty h3 {
+            margin: 0 0 6px;
+        }
+
+        .empty p {
+            margin: 0 0 14px;
+            opacity: .8;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                align-items: flex-start;
+                min-width: unset;
+            }
+
+            .item {
+                grid-template-columns: 86px 1fr;
+            }
+
+            .controls {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <div class="cart-header">
+            <div>
+                <h1 class="cart-title">Tu carrito</h1>
+                <p class="cart-subtitle muted" id="storeLabel">Selecciona una tienda en el menú si aún no lo hiciste.
+                </p>
+            </div>
+            <a class="btn btn-ghost" href="menu.html">← Seguir comprando</a>
+        </div>
+
+        <div class="layout">
+            <section class="card">
+                <div class="card-h">
+                    <h2>Productos</h2>
+                    <button class="linkbtn" id="clearCartBtn">Vaciar carrito</button>
+                </div>
+                <div class="items" id="cartItems"></div>
+
+                <div class="empty" id="emptyState" style="display:none;">
+                    <h3>Tu carrito está vacío</h3>
+                    <p>Agrega un café o un postre y vuelve aquí para finalizar.</p>
+                    <a class="btn btn-primary" href="menu.html">Ver menú</a>
+                </div>
+            </section>
+
+            <aside class="card">
+                <div class="card-h">
+                    <h2>Resumen</h2>
+                    <span class="muted" id="itemsCount">0 items</span>
+                </div>
+                <div class="summary">
+                    <div class="row"><span class="muted">Subtotal</span><strong id="subtotal">RD$ 0</strong></div>
+                    <div class="row"><span class="muted">ITBIS</span><strong id="tax">RD$ 0</strong></div>
+                    <div class="row"><span class="muted">Envío</span><strong id="shipping">RD$ 0</strong></div>
+                    <div class="row total"><span>Total</span><span id="total">RD$ 0</span></div>
+
+                    <button class="btn btn-primary" id="checkoutBtn">Finalizar pedido</button>
+                    <button class="btn btn-ghost" id="whatsBtn">Pedir por WhatsApp</button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="js/cart.js"></script>
+</body>
+
+</html>
