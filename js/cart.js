@@ -1,206 +1,245 @@
-const CART_KEY = "atalia_cart";
+// ══════════════════════════════════════════════
+//  ATALIA CAFÉ — cart.js
+//  Maneja todo el carrito de compras
+// ══════════════════════════════════════════════
 
-function money(n) {
-    const val = Math.max(0, Math.round(n));
-    return `RD$ ${val}`;
-}
-function parseMoney(str) {
-    // "RD$ 195" / "+RD$ 20" -> 195 / 20
-    const s = String(str || "").replace(/[^\d.]/g, "");
-    const n = parseFloat(s);
-    return Number.isFinite(n) ? n : 0;
-}
+const CART_KEY = 'atalia_cart';
+const STORE_KEY = 'atalia_store';
+const ITBIS_RATE = 0.18;
+const SHIPPING_FEE = 150; // RD$ — solo aplica si delivery
+const WA_NUMBER = '18091234567'; // ← Cambia por el número real
 
-function loadCart() {
-    try {
-        return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-    } catch {
-        return [];
-    }
+// ── Helpers de localStorage ──────────────────
+function getCart() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+    catch { return []; }
 }
 function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
-
-function getStoreName(storeId) {
-    const stores = {
-        "1": "Atalia Café Centro",
-        "2": "Atalia Café Norte",
-        "3": "Atalia Café Este"
-    };
-    return stores[String(storeId)] || null;
+function getStore() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); }
+    catch { return null; }
 }
 
-function render() {
-    const cart = loadCart();
+// ── Agregar producto al carrito ──────────────
+// Llama esto desde menu.js cuando el usuario hace clic en "Añadir"
+window.addToCart = function (product) {
+    // product = { id, name, price, image, size, customization }
+    const cart = getCart();
+    const index = cart.findIndex(i =>
+        i.id === product.id &&
+        i.size === product.size &&
+        i.customization === product.customization
+    );
 
-    const cartItems = document.getElementById("cartItems");
-    const emptyState = document.getElementById("emptyState");
-    const itemsCount = document.getElementById("itemsCount");
+    if (index > -1) {
+        cart[index].qty = (cart[index].qty || 1) + 1;
+    } else {
+        cart.push({ ...product, qty: 1 });
+    }
 
-    const subtotalEl = document.getElementById("subtotal");
-    const taxEl = document.getElementById("tax");
-    const shippingEl = document.getElementById("shipping");
-    const totalEl = document.getElementById("total");
+    saveCart(cart);
+    updateCartBadge();
+    showCartToast(product.name);
+};
 
-    const storeLabel = document.getElementById("storeLabel");
+// ── Badge del carrito en el header ──────────
+function updateCartBadge() {
+    const cart = getCart();
+    const total = cart.reduce((s, i) => s + (i.qty || 1), 0);
+    document.querySelectorAll('.cart-badge').forEach(el => {
+        el.textContent = total;
+        el.style.display = total > 0 ? 'flex' : 'none';
+    });
+}
+
+// ── Toast de confirmación ────────────────────
+function showCartToast(name) {
+    let toast = document.getElementById('cartToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'cartToast';
+        toast.style.cssText = `
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:#2E2E2E; color:#fff; padding:12px 20px; border-radius:999px;
+      font-family:'Poppins',sans-serif; font-size:14px; font-weight:500;
+      box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:9999;
+      transition:transform .3s ease, opacity .3s ease; opacity:0;
+      display:flex; align-items:center; gap:10px; white-space:nowrap;
+    `;
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span style="color:#8fa87a;">✓</span> ${name} añadido al carrito`;
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        toast.style.opacity = '1';
+    });
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(80px)';
+        toast.style.opacity = '0';
+    }, 2500);
+}
+
+// ══════════════════════════════════════════════
+//  RENDERIZADO DEL CARRITO (cart.html)
+// ══════════════════════════════════════════════
+function renderCart() {
+    const cartEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('emptyState');
+    const clearBtn = document.getElementById('clearCartBtn');
+    if (!cartEl) return; // No estamos en cart.html
+
+    const cart = getCart();
+
+    // Store label
+    const store = getStore();
+    const storeLbl = document.getElementById('storeLabel');
+    if (storeLbl) {
+        storeLbl.textContent = store
+            ? `📍 ${store.name} — ${store.address}`
+            : 'Selecciona una tienda en el menú si aún no lo hiciste.';
+    }
 
     if (!cart.length) {
-        cartItems.innerHTML = "";
-        emptyState.style.display = "block";
-        itemsCount.textContent = "0 items";
-        subtotalEl.textContent = money(0);
-        taxEl.textContent = money(0);
-        shippingEl.textContent = money(0);
-        totalEl.textContent = money(0);
-        storeLabel.textContent = "Selecciona una tienda en el menú si aún no lo hiciste.";
+        cartEl.innerHTML = '';
+        emptyEl.style.display = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        updateSummary(0);
         return;
     }
 
-    emptyState.style.display = "none";
+    emptyEl.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = '';
 
-    // tienda (tomamos la del primer item)
-    const storeName = getStoreName(cart[0]?.store);
-    storeLabel.textContent = storeName ? `Tienda: ${storeName}` : "Tienda no seleccionada (vuelve al menú).";
-
-    // render items
-    cartItems.innerHTML = cart.map((item, idx) => {
-        const qty = item.quantity || 1;
-        const size = item.size ? `Tamaño: ${item.size}` : null;
-        const extras = Array.isArray(item.extras) && item.extras.length
-            ? `Extras: ${item.extras.map(e => e.name).join(", ")}`
-            : null;
-
-        const unit = item.totalPrice ? parseMoney(item.totalPrice) : parseMoney(item.price);
-        const lineTotal = unit * qty;
-
-        return `
-      <div class="item">
-        <div class="thumb">
-          <img src="${item.image || "images/hero.jfif"}" alt="${item.name || "Producto"}"
-               onerror="this.onerror=null;this.src='images/hero.jfif';">
-        </div>
-
-        <div>
-          <p class="name">${item.name || "Producto"}</p>
-          <p class="meta">${[size, extras].filter(Boolean).join(" · ") || "Sin personalización"}</p>
-          <div class="price">${money(lineTotal)}</div>
-        </div>
-
-        <div class="controls">
-          <div class="qty">
-            <button class="qbtn" data-action="dec" data-idx="${idx}">−</button>
-            <span class="qnum">${qty}</span>
-            <button class="qbtn" data-action="inc" data-idx="${idx}">+</button>
-          </div>
-          <button class="linkbtn" data-action="remove" data-idx="${idx}">Eliminar</button>
-        </div>
+    cartEl.innerHTML = cart.map((item, idx) => `
+    <div class="item" data-idx="${idx}">
+      <div class="thumb">
+        ${item.image
+            ? `<img src="${item.image}" alt="${item.name}" loading="lazy">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;">☕</div>`
+        }
       </div>
-    `;
-    }).join("");
+      <div>
+        <p class="name">${item.name}</p>
+        <p class="meta">${[item.size, item.customization].filter(Boolean).join(' · ')}</p>
+        <p class="price">$${((item.price || 0) * (item.qty || 1)).toFixed(2)}</p>
+      </div>
+      <div class="controls">
+        <div class="qty">
+          <button class="qbtn" onclick="changeQty(${idx}, -1)" aria-label="Reducir">−</button>
+          <span class="qnum">${item.qty || 1}</span>
+          <button class="qbtn" onclick="changeQty(${idx}, +1)" aria-label="Aumentar">+</button>
+        </div>
+        <button class="linkbtn" onclick="removeItem(${idx})">
+          <i class="fas fa-trash-alt" style="font-size:12px;margin-right:4px;"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  `).join('');
 
-    // totals
-    const subtotal = cart.reduce((sum, item) => {
-        const qty = item.quantity || 1;
-        const unit = item.totalPrice ? parseMoney(item.totalPrice) : parseMoney(item.price);
-        return sum + unit * qty;
-    }, 0);
-
-    const tax = Math.round(subtotal * 0.18); // ajusta si tu ITBIS es otro
-    const shipping = 0; // si luego quieres delivery, lo cambias aquí
-    const total = subtotal + tax + shipping;
-
-    const totalQty = cart.reduce((t, i) => t + (Number(i.quantity) || 1), 0);
-
-
-    itemsCount.textContent = `${totalQty} item${totalQty === 1 ? "" : "s"}`;
-    subtotalEl.textContent = money(subtotal);
-    taxEl.textContent = money(tax);
-    shippingEl.textContent = money(shipping);
-    totalEl.textContent = money(total);
+    const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+    updateSummary(subtotal);
 }
 
-function updateQty(idx, delta) {
-    const cart = loadCart();
+function updateSummary(subtotal) {
+    const cart = getCart();
+    const tax = subtotal * ITBIS_RATE;
+    const total = subtotal + tax; // Envío se calcula en checkout según tipo pedido
+
+    const fmt = n => `$${n.toFixed(2)}`;
+
+    const count = cart.reduce((s, i) => s + (i.qty || 1), 0);
+    setText('itemsCount', `${count} producto${count !== 1 ? 's' : ''}`);
+    setText('subtotal', fmt(subtotal));
+    setText('tax', fmt(tax));
+    setText('shipping', 'Se calcula en checkout');
+    setText('total', fmt(total));
+
+    // Deshabilitar checkout si carrito vacío
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.disabled = !cart.length;
+        checkoutBtn.style.opacity = cart.length ? '1' : '0.5';
+    }
+}
+
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
+// ── Cambiar cantidad ─────────────────────────
+window.changeQty = function (idx, delta) {
+    const cart = getCart();
     if (!cart[idx]) return;
-
-    cart[idx].quantity = (Number(cart[idx].quantity) || 1) + delta;
-    if (cart[idx].quantity <= 0) cart.splice(idx, 1);
-
+    cart[idx].qty = Math.max(1, (cart[idx].qty || 1) + delta);
     saveCart(cart);
-    render();
-}
+    renderCart();
+    updateCartBadge();
+};
 
-function removeItem(idx) {
-    const cart = loadCart();
+// ── Eliminar item ────────────────────────────
+window.removeItem = function (idx) {
+    const cart = getCart();
     cart.splice(idx, 1);
     saveCart(cart);
-    render();
-}
+    renderCart();
+    updateCartBadge();
+};
 
+// ── Vaciar carrito ───────────────────────────
 function clearCart() {
+    if (!confirm('¿Seguro que quieres vaciar el carrito?')) return;
     saveCart([]);
-    render();
+    renderCart();
+    updateCartBadge();
 }
 
-function buildWhatsMessage() {
-    const cart = loadCart();
-    if (!cart.length) return null;
+// ── Ir al checkout ───────────────────────────
+function goToCheckout() {
+    const cart = getCart();
+    if (!cart.length) {
+        alert('Tu carrito está vacío. Agrega productos antes de continuar.');
+        return;
+    }
+    window.location.href = 'checkout.html';
+}
 
-    const storeName = getStoreName(cart[0]?.store) || "Sin tienda";
-    const lines = cart.map((item) => {
-        const qty = item.quantity || 1;
-        const size = item.size ? ` (${item.size})` : "";
-        const extras = Array.isArray(item.extras) && item.extras.length
-            ? ` + ${item.extras.map(e => e.name).join(", ")}`
-            : "";
-        const unit = item.totalPrice ? parseMoney(item.totalPrice) : parseMoney(item.price);
-        return `• ${qty} x ${item.name}${size}${extras} = ${money(unit * qty)}`;
-    });
+// ── WhatsApp directo desde carrito ───────────
+function cartToWhatsApp() {
+    const cart = getCart();
+    if (!cart.length) return;
 
-    const subtotal = cart.reduce((sum, item) => {
-        const qty = item.quantity || 1;
-        const unit = item.totalPrice ? parseMoney(item.totalPrice) : parseMoney(item.price);
-        return sum + unit * qty;
-    }, 0);
-    const tax = Math.round(subtotal * 0.18);
+    const lines = cart.map(i => `• ${i.name} × ${i.qty || 1} — $${((i.price || 0) * (i.qty || 1)).toFixed(2)}`).join('\n');
+    const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+    const tax = subtotal * ITBIS_RATE;
     const total = subtotal + tax;
+    const store = getStore();
 
-    return `Pedido Atalia Café\nTienda: ${storeName}\n\n${lines.join("\n")}\n\nSubtotal: ${money(subtotal)}\nITBIS: ${money(tax)}\nTOTAL: ${money(total)}`;
+    const msg = `🍵 *Pedido - Atalia Café*
+${store ? `📍 Tienda: ${store.name}` : ''}
+
+${lines}
+
+💰 Subtotal: $${subtotal.toFixed(2)}
+🧾 Tax (18%): $${tax.toFixed(2)}
+✅ Total: $${total.toFixed(2)}
+
+_(Precio de envío por confirmar)_`;
+
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-document.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-action]");
-    if (!btn) return;
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    renderCart();
+    updateCartBadge();
 
-    const action = btn.dataset.action;
-    const idx = parseInt(btn.dataset.idx, 10);
-
-    if (action === "dec") updateQty(idx, -1);
-    if (action === "inc") updateQty(idx, 1);
-    if (action === "remove") removeItem(idx);
-});
-
-document.getElementById("clearCartBtn")?.addEventListener("click", () => clearCart());
-
-document.getElementById("checkoutBtn")?.addEventListener("click", () => {
-    window.location.href = "checkout.html";
-});
-
-document.getElementById("whatsBtn")?.addEventListener("click", () => {
-    const msg = buildWhatsMessage();
-    if (!msg) return;
-
-    // Pon tu número aquí en formato internacional: 1809..., 1829..., etc.
-    const phone = "";
-    const url = phone
-        ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
-        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-    window.open(url, "_blank");
-});
-
-document.addEventListener("DOMContentLoaded", render);
-window.addEventListener("storage", (e) => {
-    if (e.key === CART_KEY) render();
+    document.getElementById('clearCartBtn')?.addEventListener('click', clearCart);
+    document.getElementById('checkoutBtn')?.addEventListener('click', goToCheckout);
+    document.getElementById('whatsBtn')?.addEventListener('click', cartToWhatsApp);
 });
