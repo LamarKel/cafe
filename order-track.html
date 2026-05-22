@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order — Atalia Café</title>
+    <meta name="description" content="Track your Atalia Café order in real time.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        /* ── Lang toggle ── */
+        .lang-toggle {
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: .8rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all .25s
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary-color);
+            color: #fff
+        }
+
+        /* ── Cart badge ── */
+        .nav-cart {
+            position: relative;
+            display: flex;
+            align-items: center
+        }
+
+        .nav-cart .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--secondary-color);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 700
+        }
+
+        /* ── Page ── */
+        .track-page {
+            min-height: 100vh;
+            padding-top: 80px;
+            background: var(--accent-color)
+        }
+
+        .track-container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: var(--space-xl) var(--space-md)
+        }
+
+        /* ── Title ── */
+        .track-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            color: var(--dark-color);
+            margin-bottom: 6px;
+            text-align: center
+        }
+
+        .track-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: var(--space-xl);
+            font-size: .95rem
+        }
+
+        /* ── Search box ── */
+        .track-search-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg)
+        }
+
+        .track-search-label {
+            font-size: .8rem;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: block
+        }
+
+        .track-search-row {
+            display: flex;
+            gap: 10px
+        }
+
+        .track-input {
+            flex: 1;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 13px 16px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            color: var(--dark-color);
+            outline: none;
+            background: var(--accent-color);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            transition: border-color .2s, box-shadow .2s
+        }
+
+        .track-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(107, 127, 90, .12);
+            background: #fff
+        }
+
+        .track-input::placeholder {
+            letter-spacing: 0;
+            text-transform: none;
+            color: var(--text-light)
+        }
+
+        .track-btn {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px 22px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .25s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .track-btn:hover {
+            background: var(--secondary-color)
+        }
+
+        .track-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        /* Error / not found */
+        .track-error {
+            display: none;
+            margin-top: var(--space-md);
+            padding: 12px 16px;
+            background: rgba(224, 85, 85, .06);
+            border: 1px solid rgba(224, 85, 85, .2);
+            border-radius: var(--radius-md);
+            color: #c83232;
+            font-size: .88rem;
+            align-items: center;
+            gap: 10px
+        }
+
+        .track-error.show {
+            display: flex
+        }
+
+        /* ── Order result card ── */
+        .order-result {
+            display: none;
+            animation: fadeUp .4s ease both
+        }
+
+        .order-result.show {
+            display: block
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* Header */
+        .result-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: var(--space-md)
+        }
+
+        .result-head {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .result-code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: .15em;
+            color: var(--secondary-color)
+        }
+
+        .result-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .8rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-top: 4px
+        }
+
+        .result-type.pickup {
+            background: rgba(107, 127, 90, .1);
+            color: var(--primary-color)
+        }
+
+        .result-type.delivery {
+            background: rgba(107, 74, 58, .08);
+            color: var(--secondary-color)
+        }
+
+        .result-status-badge {
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 700;
+            font-family: var(--font-body)
+        }
+
+        .result-status-badge.pending {
+            background: rgba(224, 168, 85, .12);
+            color: #c47d00;
+            border: 1.5px solid rgba(224, 168, 85, .3)
+        }
+
+        .result-status-badge.preparing {
+            background: rgba(107, 127, 90, .1);
+            color: var(--primary-color);
+            border: 1.5px solid rgba(107, 127, 90, .25)
+        }
+
+        .result-status-badge.ready {
+            background: rgba(107, 74, 58, .08);
+            color: var(--secondary-color);
+            border: 1.5px solid rgba(107, 74, 58, .2)
+        }
+
+        .result-status-badge.delivered {
+            background: #f0f7ee;
+            color: #3a7a2a;
+            border: 1.5px solid #b8ddb0
+        }
+
+        .result-status-badge.cancelled {
+            background: rgba(224, 85, 85, .08);
+            color: #c83232;
+            border: 1.5px solid rgba(224, 85, 85, .2)
+        }
+
+        /* ── Progress tracker ── */
+        .progress-wrap {
+            padding: var(--space-xl) var(--space-lg)
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: var(--border-color);
+            z-index: 0
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            height: 3px;
+            background: var(--primary-color);
+            z-index: 1;
+            transition: width .6s ease
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            position: relative;
+            z-index: 2
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            background: var(--light-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            color: var(--text-light);
+            transition: all .4s ease;
+            flex-shrink: 0
+        }
+
+        .step-circle.done {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: #fff
+        }
+
+        .step-circle.active {
+            border-color: var(--primary-color);
+            background: #fff;
+            color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(107, 127, 90, .15)
+        }
+
+        .step-circle.cancelled {
+            border-color: #e05555;
+            background: #e05555;
+            color: #fff
+        }
+
+        .step-label {
+            font-size: .72rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-light);
+            line-height: 1.3;
+            max-width: 70px
+        }
+
+        .step-label.done,
+        .step-label.active {
+            color: var(--dark-color)
+        }
+
+        /* ── Details section ── */
+        .result-details {
+            padding: var(--space-lg);
+            border-top: 1px solid var(--border-color)
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md)
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 4px
+        }
+
+        .detail-item span {
+            font-size: .9rem;
+            color: var(--dark-color);
+            font-weight: 500
+        }
+
+        /* ── Order items ── */
+        .items-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: var(--space-md)
+        }
+
+        .items-head {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-color)
+        }
+
+        .items-title {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            color: var(--dark-color)
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+            font-size: .88rem
+        }
+
+        .item-row:last-child {
+            border-bottom: none
+        }
+
+        .item-row-name {
+            color: var(--dark-color);
+            font-weight: 500;
+            flex: 1
+        }
+
+        .item-row-meta {
+            font-size: .78rem;
+            color: var(--text-light);
+            margin-top: 2px
+        }
+
+        .item-row-price {
+            font-weight: 600;
+            color: var(--secondary-color);
+            white-space: nowrap
+        }
+
+        /* Totals */
+        .totals-section {
+            padding: var(--space-md) var(--space-lg);
+            border-top: 1px solid var(--border-color);
+            background: var(--accent-color)
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .88rem;
+            margin-bottom: 6px;
+            color: var(--text-light)
+        }
+
+        .total-row span:last-child {
+            font-weight: 600;
+            color: var(--dark-color)
+        }
+
+        .total-row.grand {
+            font-size: 1rem;
+            padding-top: 8px;
+            border-top: 1.5px solid var(--border-color);
+            margin-top: 8px
+        }
+
+        .total-row.grand span {
+            color: var(--secondary-color);
+            font-weight: 700
+        }
+
+        .total-row.grand span:first-child {
+            color: var(--dark-color)
+        }
+
+        /* ── Live badge ── */
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .75rem;
+            color: var(--primary-color);
+            background: rgba(107, 127, 90, .08);
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(107, 127, 90, .2);
+            margin-bottom: var(--space-md)
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .35
+            }
+        }
+
+        /* ── Status message ── */
+        .status-message {
+            padding: var(--space-md) var(--space-lg);
+            background: rgba(107, 127, 90, .05);
+            border-top: 1px solid rgba(107, 127, 90, .1);
+            font-size: .88rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start
+        }
+
+        .status-message i {
+            color: var(--primary-color);
+            margin-top: 2px;
+            flex-shrink: 0
+        }
+
+        /* ── CTA ── */
+        .track-cta {
+            text-align: center;
+            margin-top: var(--space-xl)
+        }
+
+        .track-cta p {
+            color: var(--text-light);
+            font-size: .9rem;
+            margin-bottom: var(--space-md)
+        }
+
+        /* ── Skeleton ── */
+        .skeleton-result {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-xl);
+            display: none
+        }
+
+        .skeleton-result.show {
+            display: block
+        }
+
+        .sk {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position-x: -200%
+            }
+        }
+
+        /* ── Responsive ── */
+        @media(max-width:540px) {
+            .track-search-row {
+                flex-direction: column
+            }
+
+            .track-btn {
+                width: 100%;
+                justify-content: center
+            }
+
+            .progress-steps::before {
+                top: 16px;
+                left: 16px;
+                right: 16px
+            }
+
+            .progress-line {
+                top: 16px;
+                left: 16px
+            }
+
+            .step-circle {
+                width: 32px;
+                height: 32px;
+                font-size: .75rem
+            }
+
+            .step-label {
+                font-size: .65rem;
+                max-width: 56px
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr
+            }
+
+            .result-head {
+                flex-direction: column
+            }
+        }
+
+        @media(max-width:480px) {
+            .track-page {
+                padding-top: 70px
+            }
+
+            .track-search-card {
+                padding: var(--space-md)
+            }
+
+            .progress-wrap {
+                padding: var(--space-lg) var(--space-md)
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+    <header class="header">
+        <nav class="navbar" aria-label="Main navigation">
+            <a href="index.html" class="logo" aria-label="Atalia Café — Home">
+                <span class="logo-text">Atalia Café</span>
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="Open navigation" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
+                <li><a href="menu.html" class="nav-link" data-i18n="nav.menu">Menu</a></li>
+                <li><a href="index.html#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
+                <li>
+                    <a href="cart.html" class="nav-link nav-cart" aria-label="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" aria-live="polite"></span>
+                    </a>
+                </li>
+                <li><button class="lang-toggle" aria-label="Switch to Spanish">ES</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════
+     TRACK PAGE
+═══════════════════════════════════════ -->
+    <div class="track-page">
+        <div class="track-container">
+
+            <h1 class="track-title" data-i18n="track.title">Track your order</h1>
+            <p class="track-subtitle">Enter your order code to see the current status in real time.</p>
+
+            <!-- Search -->
+            <div class="track-search-card">
+                <label class="track-search-label" for="codeInput" data-i18n="track.title">Order code</label>
+                <div class="track-search-row">
+                    <input type="text" id="codeInput" class="track-input" data-i18n-placeholder="track.placeholder"
+                        placeholder="e.g. ATL-K9X2" maxlength="10" autocomplete="off" aria-label="Order code">
+                    <button class="track-btn" id="trackBtn" onclick="trackOrder()" data-i18n="track.search">
+                        <i class="fas fa-search"></i>
+                        Track
+                    </button>
+                </div>
+                <div class="track-error" id="trackError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="trackErrorMsg" data-i18n="track.not_found">Order not found. Check your code and try
+                        again.</span>
+                </div>
+            </div>
+
+            <!-- Skeleton while loading -->
+            <div class="skeleton-result" id="skeletonResult">
+                <div class="sk" style="height:28px;width:160px;margin-bottom:12px;"></div>
+                <div class="sk" style="height:16px;width:100%;margin-bottom:8px;"></div>
+                <div class="sk" style="height:16px;width:80%;margin-bottom:24px;"></div>
+                <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                    <div class="sk" style="height:40px;width:40px;border-radius:50%;flex-shrink:0;"></div>
+                    <div class="sk" style="height:3px;flex:1;align-self:center;"></div>
+                    <div class="sk" style="height:40px;width:40px;border-radius:50%;flex-shrink:0;"></div>
+                    <div class="sk" style="height:3px;flex:1;align-self:center;"></div>
+                    <div class="sk" style="height:40px;width:40px;border-radius:50%;flex-shrink:0;"></div>
+                    <div class="sk" style="height:3px;flex:1;align-self:center;"></div>
+                    <div class="sk" style="height:40px;width:40px;border-radius:50%;flex-shrink:0;"></div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="order-result" id="orderResult">
+
+                <!-- Live badge -->
+                <div class="live-badge">
+                    <div class="live-dot"></div>
+                    <span>Live updates</span>
+                </div>
+
+                <!-- Main card -->
+                <div class="result-card">
+
+                    <!-- Header -->
+                    <div class="result-head">
+                        <div>
+                            <div class="result-code" id="resultCode">ATL-0000</div>
+                            <div class="result-type pickup" id="resultType">
+                                <i class="fas fa-store"></i>
+                                <span id="resultTypeLabel">Pickup</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                            <span class="result-status-badge" id="resultStatusBadge">Pending</span>
+                            <span style="font-size:.78rem;color:var(--text-light);" id="resultTime"></span>
+                        </div>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="progress-wrap" id="progressWrap">
+                        <div class="progress-steps" id="progressSteps">
+                            <!-- Steps injected by JS -->
+                        </div>
+                        <div class="progress-line" id="progressLine" style="width:0%"></div>
+                    </div>
+
+                    <!-- Status message -->
+                    <div class="status-message" id="statusMessage">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="statusMessageText"></span>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="result-details">
+                        <div class="detail-grid" id="detailGrid"></div>
+                    </div>
+
+                </div><!-- /result-card -->
+
+                <!-- Items card -->
+                <div class="items-card" id="itemsCard">
+                    <div class="items-head">
+                        <div class="items-title">Order items</div>
+                    </div>
+                    <div id="itemsList"></div>
+                    <div class="totals-section" id="totalsList"></div>
+                </div>
+
+                <!-- CTA -->
+                <div class="track-cta">
+                    <p>Enjoying Atalia Café? Order again!</p>
+                    <a href="menu.html" class="btn btn-primary">
+                        <i class="fas fa-coffee"></i> View menu
+                    </a>
+                </div>
+
+            </div><!-- /order-result -->
+
+        </div>
+    </div>
+
+    <script type="module">
+        import {
+            sb, getSettings, getCurrentLang,
+            formatPrice, sanitize, sanitizeInput,
+            updateCartBadge
+        } from './js/supabase.js';
+        import { initI18n, t } from './js/i18n.js';
+
+        initI18n();
+        updateCartBadge();
+
+        const settings = await getSettings();
+        let realtimeChannel = null;
+        let currentOrderId = null;
+
+        // ── Status config ─────────────────────────
+        const STATUS_CONFIG = {
+            pending: { label: 'Pending', icon: 'fas fa-clock', progress: 0, message: 'Your order has been received and is waiting to be prepared.' },
+            preparing: { label: 'Preparing', icon: 'fas fa-fire', progress: 33, message: 'Our team is preparing your order right now!' },
+            ready: { label: 'Ready for pickup', icon: 'fas fa-check', progress: 66, message: 'Your order is ready! Come pick it up at the counter.' },
+            delivered: { label: 'Delivered', icon: 'fas fa-handshake', progress: 100, message: 'Your order has been delivered. Enjoy your coffee! ☕' },
+            cancelled: { label: 'Cancelled', icon: 'fas fa-times', progress: 0, message: 'This order has been cancelled. Please contact us if you have questions.' },
+        };
+
+        const STEPS = [
+            { key: 'pending', label: 'Received', icon: 'fas fa-receipt' },
+            { key: 'preparing', label: 'Preparing', icon: 'fas fa-fire' },
+            { key: 'ready', label: 'Ready', icon: 'fas fa-check' },
+            { key: 'delivered', label: 'Delivered', icon: 'fas fa-handshake' },
+        ];
+        const STEP_ORDER = ['pending', 'preparing', 'ready', 'delivered'];
+
+        // ── Auto-load from URL param ──────────────
+        const urlCode = new URLSearchParams(window.location.search).get('code');
+        if (urlCode) {
+            document.getElementById('codeInput').value = urlCode.toUpperCase();
+            trackOrder();
+        }
+
+        // Enter key
+        document.getElementById('codeInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') trackOrder();
+        });
+        document.getElementById('codeInput').addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        // ── Track ─────────────────────────────────
+        window.trackOrder = async function () {
+            const raw = document.getElementById('codeInput').value.trim().toUpperCase();
+            const code = sanitizeInput(raw);
+            if (!code) return;
+
+            hideError();
+            showSkeleton(true);
+            hideResult();
+
+            const { data: order, error } = await sb
+                .from('orders')
+                .select('*, order_items(*)')
+                .eq('code', code)
+                .single();
+
+            showSkeleton(false);
+
+            if (error || !order) {
+                showError(t('track.not_found'));
+                return;
+            }
+
+            currentOrderId = order.id;
+            renderOrder(order);
+            startRealtime(order.id);
+
+            // Update URL without reload
+            const url = new URL(window.location);
+            url.searchParams.set('code', code);
+            window.history.replaceState({}, '', url);
+        };
+
+        // ── Render order ──────────────────────────
+        function renderOrder(order) {
+            const lang = getCurrentLang();
+            const fmt = n => formatPrice(n, settings);
+            const status = order.status || 'pending';
+            const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+            const isCancelled = status === 'cancelled';
+
+            // Header
+            document.getElementById('resultCode').textContent = sanitize(order.code);
+
+            const typeEl = document.getElementById('resultType');
+            const typeLbl = document.getElementById('resultTypeLabel');
+            typeEl.className = `result-type ${order.order_type}`;
+            typeEl.querySelector('i').className = order.order_type === 'delivery' ? 'fas fa-motorcycle' : 'fas fa-store';
+            typeLbl.textContent = order.order_type === 'delivery' ? 'Delivery' : 'Pickup';
+
+            // Status badge
+            const badge = document.getElementById('resultStatusBadge');
+            badge.textContent = cfg.label;
+            badge.className = `result-status-badge ${status}`;
+
+            // Time
+            const createdAt = new Date(order.created_at);
+            document.getElementById('resultTime').textContent =
+                createdAt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            // Progress steps
+            if (isCancelled) {
+                document.getElementById('progressWrap').style.display = 'none';
+            } else {
+                document.getElementById('progressWrap').style.display = '';
+                renderProgressSteps(status);
+            }
+
+            // Status message
+            document.getElementById('statusMessageText').textContent = cfg.message;
+            const msgIcon = document.querySelector('.status-message i');
+            msgIcon.className = isCancelled ? 'fas fa-times-circle' : 'fas fa-info-circle';
+            msgIcon.style.color = isCancelled ? '#e05555' : 'var(--primary-color)';
+
+            // Details
+            const detailGrid = document.getElementById('detailGrid');
+            const details = [
+                { label: 'Customer', value: order.customer_name },
+                { label: 'Phone', value: order.customer_phone },
+                order.order_type === 'delivery' && order.address
+                    ? { label: 'Address', value: [order.address, order.city, order.state, order.zip_code].filter(Boolean).join(', ') }
+                    : null,
+                order.note ? { label: 'Note', value: order.note } : null,
+                { label: 'Payment', value: order.payment_method === 'card' ? '💳 Card' : '💵 Cash' },
+                { label: 'Order type', value: order.order_type === 'delivery' ? '🚗 Delivery' : '🏪 Pickup' },
+            ].filter(Boolean);
+
+            detailGrid.innerHTML = details.map(d => `
+    <div class="detail-item">
+      <label>${sanitize(d.label)}</label>
+      <span>${sanitize(d.value || '—')}</span>
+    </div>`).join('');
+
+            // Items
+            const items = order.order_items || [];
+            document.getElementById('itemsList').innerHTML = items.map(item => `
+    <div class="item-row">
+      <div>
+        <div class="item-row-name">${sanitize(item.product_name_snapshot || '—')}</div>
+        <div class="item-row-meta">
+          ${[item.size, item.extras].filter(Boolean).map(sanitize).join(' · ')}
+        </div>
+      </div>
+      <div>
+        <div class="item-row-price">${fmt(item.line_total)}</div>
+        <div style="font-size:.72rem;color:var(--text-light);text-align:right;">× ${item.quantity}</div>
+      </div>
+    </div>`).join('');
+
+            // Totals
+            const taxLabel = settings?.tax_label || 'Sales Tax';
+            document.getElementById('totalsList').innerHTML = `
+    <div class="total-row"><span>Subtotal</span><span>${fmt(order.subtotal)}</span></div>
+    ${order.discount_amount > 0 ? `<div class="total-row"><span>Discount</span><span style="color:var(--primary-color);">-${fmt(order.discount_amount)}</span></div>` : ''}
+    <div class="total-row"><span>${sanitize(taxLabel)}</span><span>${fmt(order.tax_amount)}</span></div>
+    ${order.shipping_fee > 0 ? `<div class="total-row"><span>Delivery</span><span>${fmt(order.shipping_fee)}</span></div>` : ''}
+    <div class="total-row grand"><span>Total</span><span>${fmt(order.total)}</span></div>`;
+
+            showResult();
+        }
+
+        // ── Progress steps ────────────────────────
+        function renderProgressSteps(currentStatus) {
+            const currentIdx = STEP_ORDER.indexOf(currentStatus);
+            const stepsEl = document.getElementById('progressSteps');
+            const lineEl = document.getElementById('progressLine');
+
+            stepsEl.innerHTML = STEPS.map((step, i) => {
+                let circleClass = '';
+                let labelClass = '';
+                if (i < currentIdx) { circleClass = 'done'; labelClass = 'done'; }
+                if (i === currentIdx) { circleClass = 'active'; labelClass = 'active'; }
+                return `
+      <div class="progress-step">
+        <div class="step-circle ${circleClass}">
+          <i class="${step.icon}" aria-hidden="true"></i>
+        </div>
+        <div class="step-label ${labelClass}">${step.label}</div>
+      </div>`;
+            }).join('');
+
+            // Animate line
+            const pct = currentIdx < 0 ? 0 : (currentIdx / (STEPS.length - 1)) * 100;
+            setTimeout(() => { lineEl.style.width = `${pct}%`; }, 50);
+        }
+
+        // ── Realtime subscription ─────────────────
+        function startRealtime(orderId) {
+            // Unsubscribe previous
+            if (realtimeChannel) {
+                sb.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = sb.channel(`order-${orderId}`)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'orders',
+                    filter: `id=eq.${orderId}`,
+                }, payload => {
+                    if (payload.new) {
+                        // Fetch full order with items
+                        sb.from('orders')
+                            .select('*, order_items(*)')
+                            .eq('id', orderId)
+                            .single()
+                            .then(({ data }) => { if (data) renderOrder(data); });
+                    }
+                })
+                .subscribe();
+        }
+
+        // ── UI helpers ────────────────────────────
+        function showSkeleton(show) {
+            document.getElementById('skeletonResult').classList.toggle('show', show);
+            document.getElementById('trackBtn').disabled = show;
+        }
+        function showResult() { document.getElementById('orderResult').classList.add('show'); }
+        function hideResult() { document.getElementById('orderResult').classList.remove('show'); }
+        function showError(msg) { const el = document.getElementById('trackError'); document.getElementById('trackErrorMsg').textContent = msg; el.classList.add('show'); }
+        function hideError() { document.getElementById('trackError').classList.remove('show'); }
+
+        // ── Nav hamburger ─────────────────────────
+        document.getElementById('hamburger').addEventListener('click', () => {
+            const nav = document.getElementById('nav-links');
+            const open = nav.classList.toggle('active');
+            document.getElementById('hamburger').setAttribute('aria-expanded', open);
+        });
+    </script>
+
+</body>
+
+</html>

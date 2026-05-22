@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Atalia Café - Tu café favorito</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Atalia Café - Café recién preparado, panadería artesanal y postres caseros en un ambiente acogedor.">
 
-    <!-- Preconexiones para mejorar performance -->
+    <!-- SEO — pulled from business_settings via JS -->
+    <title>Atalia Café</title>
+    <meta name="description"
+        content="Atalia Café — Freshly brewed coffee, artisan bakery and homemade desserts in a welcoming atmosphere.">
+
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Fuentes -->
+    <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
-    <!-- Iconos -->
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Favicon -->
@@ -25,312 +27,1020 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        /* ── Lang toggle button ── */
+        .lang-toggle {
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: .04em;
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        /* ── Cart icon in nav ── */
+        .nav-cart {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-cart .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--secondary-color);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, .48), rgba(0, 0, 0, .48)),
+                url('images/hero.png') center/cover no-repeat;
+            color: #fff;
+            margin-top: 80px;
+        }
+
+        /* ── Menu preview skeleton ── */
+        .menu-card.loading-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .skeleton-img {
+            width: 100%;
+            height: 200px;
+        }
+
+        .skeleton-line {
+            height: 16px;
+            border-radius: 4px;
+            margin: 12px 16px 0;
+        }
+
+        .skeleton-line.short {
+            width: 50%;
+            margin-bottom: 16px;
+        }
+
+        /* ── Menu card ── */
+        .menu-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .menu-card .card-content {
+            padding: var(--space-md);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-card .card-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            color: var(--dark-color);
+        }
+
+        .menu-card .card-desc {
+            font-size: .875rem;
+            color: var(--text-light);
+            flex: 1;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .menu-card .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .menu-card .card-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .menu-card .card-add {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .25s ease;
+            font-family: var(--font-body);
+        }
+
+        .menu-card .card-add:hover {
+            background: var(--secondary-color);
+        }
+
+        .menu-card .card-add:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* ── Sold out badge ── */
+        .badge-sold-out {
+            display: inline-block;
+            background: #e05555;
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* ── Featured badge ── */
+        .badge-featured {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            position: absolute;
+            top: 12px;
+            left: 12px;
+        }
+
+        .menu-card .img-wrap {
+            position: relative;
+        }
+
+        /* ── Tab panel ── */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ── Reviews ── */
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .review-card {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .review-stars {
+            color: #f5a623;
+            margin-bottom: 8px;
+            font-size: .9rem;
+        }
+
+        .review-text {
+            font-size: .9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .review-author {
+            font-weight: 600;
+            font-size: .875rem;
+            color: var(--dark-color);
+        }
+
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--dark-color);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 999px;
+            font-size: .875rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn .3s ease both;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .toast.success {
+            background: var(--primary-color);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Hours table ── */
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .9rem;
+        }
+
+        .hours-table td {
+            padding: 6px 0;
+            color: var(--text-light);
+        }
+
+        .hours-table td:first-child {
+            font-weight: 600;
+            color: var(--dark-color);
+            width: 40%;
+        }
+
+        .hours-table tr.today td {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* ── Contact grid ── */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            align-items: start;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .contact-info-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .contact-info-item i {
+            color: var(--primary-color);
+            margin-top: 3px;
+            width: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Skip to main content para accesibilidad -->
-    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-    <!-- ================= HEADER ================= -->
+    <!-- Skip link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
     <header class="header">
-        <nav class="navbar" aria-label="Navegación principal">
-            <a href="/" class="logo" aria-label="Atalia Café - Inicio">
+        <nav class="navbar" aria-label="Main navigation">
+
+            <a href="index.html" class="logo" aria-label="Atalia Café — Home">
                 <span class="logo-text">Atalia Café</span>
             </a>
 
-            <button class="hamburger" id="hamburger" aria-label="Menú de navegación" aria-expanded="false">
+            <button class="hamburger" id="hamburger" aria-label="Open navigation" aria-expanded="false">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
 
             <ul class="nav-links" id="nav-links">
-                <li><a href="#inicio" class="nav-link">Inicio</a></li>
-                <li><a href="#menu" class="nav-link">Menú</a></li>
-                <li><a href="#diferencial" class="nav-link">Experiencia</a></li>
-                <li><a href="#orden" class="nav-link">Ordenar</a></li>
-                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+                <li><a href="#home" class="nav-link" data-i18n="nav.home">Home</a></li>
+                <li><a href="#menu" class="nav-link" data-i18n="nav.menu">Menu</a></li>
+                <li><a href="#experience" class="nav-link" data-i18n="nav.experience">Experience</a></li>
+                <li><a href="#order" class="nav-link" data-i18n="nav.order">Order</a></li>
+                <li><a href="#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
+                <li>
+                    <a href="cart.html" class="nav-link nav-cart" aria-label="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" aria-live="polite"></span>
+                    </a>
+                </li>
+                <li>
+                    <button class="lang-toggle" aria-label="Switch to Spanish" title="Switch to Spanish">ES</button>
+                </li>
             </ul>
+
         </nav>
 
-        <div class="hero" id="inicio">
+        <!-- ── HERO ── -->
+        <div class="hero" id="home">
             <div class="hero-content">
-                <h1 class="hero-title">Tu café favorito, recién preparado todos los días</h1>
+                <h1 class="hero-title" data-i18n="hero.title">
+                    Your favorite café, freshly prepared every day
+                </h1>
                 <div class="hero-buttons">
-                    <a href="#menu" class="btn btn-primary">Ver menú</a>
-                    <a href="#orden" class="btn btn-secondary">Ordenar online</a>
+                    <a href="menu.html" class="btn btn-primary" data-i18n="hero.cta_menu">View menu</a>
+                    <a href="#order" class="btn btn-secondary" data-i18n="hero.cta_order">Order online</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- ================= MAIN CONTENT ================= -->
+    <!-- ═══════════════════════════════════════
+     MAIN
+═══════════════════════════════════════ -->
     <main id="main-content">
-        <!-- ================= MENÚ ================= -->
+
+        <!-- ── MENU PREVIEW ── -->
         <section id="menu" class="section menu-section" aria-labelledby="menu-title">
             <div class="container">
-                <h2 id="menu-title" class="section-title">Nuestro Menú</h2>
-                <p class="section-subtitle">Selecciona una categoría para ver nuestros productos</p>
 
+                <h2 id="menu-title" class="section-title" data-i18n="menu.title">Our Menu</h2>
+                <p class="section-subtitle" data-i18n="menu.subtitle">
+                    Select a category to explore our products
+                </p>
+
+                <!-- Tabs -->
                 <div class="menu-tabs">
-                    <div class="tabs" role="tablist" aria-label="Categorías del menú">
-                        <button class="tab-button active" data-category="cafes" id="tab-cafes" role="tab"
-                            aria-selected="true" aria-controls="cafes-panel">
-                            Cafés
-                        </button>
-                        <button class="tab-button" data-category="bebidas" id="tab-bebidas" role="tab"
-                            aria-selected="false" aria-controls="bebidas-panel">
-                            Bebidas Frías
-                        </button>
-                        <button class="tab-button" data-category="panaderia" id="tab-panaderia" role="tab"
-                            aria-selected="false" aria-controls="panaderia-panel">
-                            Panadería
-                        </button>
-                        <button class="tab-button" data-category="postres" id="tab-postres" role="tab"
-                            aria-selected="false" aria-controls="postres-panel">
-                            Postres
-                        </button>
+                    <div class="tabs" role="tablist" id="categoryTabs" aria-label="Menu categories">
+                        <!-- Generated by JS from Supabase categories -->
+                        <div class="skeleton" style="width:80px;height:40px;border-radius:999px;"></div>
+                        <div class="skeleton" style="width:100px;height:40px;border-radius:999px;"></div>
+                        <div class="skeleton" style="width:90px;height:40px;border-radius:999px;"></div>
+                        <div class="skeleton" style="width:80px;height:40px;border-radius:999px;"></div>
                     </div>
-
-                    <a href="menu.html" class="menu-more-link">Ver menú completo</a>
+                    <a href="menu.html" class="menu-more-link" data-i18n="menu.view_all">View full menu</a>
                 </div>
 
-                <!-- Panel de cada categoría -->
-                <div id="cafes-panel" class="tab-panel active" role="tabpanel" aria-labelledby="tab-cafes">
-                    <div class="menu-grid">
-                        <!-- Las tarjetas se generarán dinámicamente con JS -->
+                <!-- Products grid -->
+                <div id="menuGrid" class="menu-grid">
+                    <!-- Skeletons while loading -->
+                    <div class="menu-card loading-card">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line short"></div>
+                    </div>
+                    <div class="menu-card loading-card">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line short"></div>
+                    </div>
+                    <div class="menu-card loading-card">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line short"></div>
                     </div>
                 </div>
 
-                <div class="text-center">
-                    <a href="menu.html" class="btn btn-primary">Ver menú completo</a>
+                <div class="text-center" style="margin-top: var(--space-xl);">
+                    <a href="menu.html" class="btn btn-primary" data-i18n="menu.view_all">View full menu</a>
                 </div>
+
             </div>
         </section>
 
-        <!-- ================= DIFERENCIAL ================= -->
-        <section id="diferencial" class="section diferencial-section" aria-labelledby="diferencial-title">
+        <!-- ── EXPERIENCE ── -->
+        <section id="experience" class="section diferencial-section" aria-labelledby="exp-title">
             <div class="container">
                 <div class="diferencial-grid">
+
                     <div class="diferencial-content">
-                        <span class="section-badge">Más allá del café</span>
-                        <h2 id="diferencial-title" class="section-title">Saborea la diferencia</h2>
-                        <p class="diferencial-lead">Auténtico en cada grano, en cada rostro, en cada instante.</p>
+                        <span class="section-badge" data-i18n="exp.badge">Beyond the coffee</span>
+                        <h2 id="exp-title" class="section-title" style="text-align:left;" data-i18n="exp.title">
+                            Taste the difference
+                        </h2>
+                        <p class="diferencial-lead" data-i18n="exp.lead">
+                            Authentic in every bean, every face, every moment.
+                        </p>
 
                         <div class="features-list">
                             <div class="feature-item">
                                 <i class="feature-icon fas fa-mug-hot" aria-hidden="true"></i>
                                 <div class="feature-text">
-                                    <h3>Café diario</h3>
-                                    <p>Café recién preparado, listo para llevar</p>
+                                    <h3 data-i18n="exp.f1_title">Daily coffee</h3>
+                                    <p data-i18n="exp.f1_desc">Freshly brewed coffee, ready to go</p>
                                 </div>
                             </div>
-
                             <div class="feature-item">
                                 <i class="feature-icon fas fa-bag-shopping" aria-hidden="true"></i>
                                 <div class="feature-text">
-                                    <h3>Dulces caseros</h3>
-                                    <p>Acompaña tu café con nuestros dulces hechos en casa</p>
+                                    <h3 data-i18n="exp.f2_title">Homemade sweets</h3>
+                                    <p data-i18n="exp.f2_desc">Pair your coffee with our house-made treats</p>
                                 </div>
                             </div>
-
                             <div class="feature-item">
                                 <i class="feature-icon fas fa-birthday-cake" aria-hidden="true"></i>
                                 <div class="feature-text">
-                                    <h3>Pasíon por lo artesanal</h3>
-                                    <p>Cada producto hecho con amor y dedicación</p>
+                                    <h3 data-i18n="exp.f3_title">Passion for craft</h3>
+                                    <p data-i18n="exp.f3_desc">Every product made with love and dedication</p>
                                 </div>
                             </div>
                         </div>
 
-                        <a href="#orden" class="btn btn-primary">Ordenar ahora</a>
+                        <a href="#order" class="btn btn-primary" data-i18n="exp.cta">Order now</a>
                     </div>
 
                     <div class="diferencial-image">
-                        <img src="images/diferencia2.png" alt="Interior acogedor de Atalia Café" loading="lazy">
+                        <img src="images/diferencia2.png" alt="Atalia Café interior" loading="lazy">
                     </div>
+
                 </div>
             </div>
         </section>
 
-        <section class="order-modes" id="formas-pedido">
+        <!-- ── ORDER MODES ── -->
+        <section class="order-modes" id="order" aria-labelledby="order-title">
             <div class="container order-modes-layout">
 
-                <!-- IMAGEN -->
                 <div class="order-modes-image">
-                    <img src="images/order-side.png" alt="Ordena tu café Atalia">
+                    <img src="images/order-side.png" alt="Order your Atalia Café coffee" loading="lazy">
                 </div>
 
-                <!-- CONTENIDO -->
                 <div class="order-modes-content">
-                    <span class="order-eyebrow">Ordena como prefieras</span>
-                    <h2>Tu café, a tu manera</h2>
-                    <p class="order-description">
-                        Elige cómo disfrutar Atalia Café: pasa a recogerlo, llévalo contigo
-                        o recíbelo donde estés.
+                    <span class="order-eyebrow" data-i18n="order.eyebrow">Order your way</span>
+                    <h2 id="order-title" data-i18n="order.title">Your coffee, your way</h2>
+                    <p class="order-description" data-i18n="order.desc">
+                        Choose how to enjoy Atalia Café: pick it up, take it with you, or get it delivered.
                     </p>
 
                     <div class="order-modes-grid">
                         <article class="order-mode">
-                            <i class="fas fa-store"></i>
+                            <i class="fas fa-store" aria-hidden="true"></i>
                             <div>
-                                <h3>Recoger en tienda</h3>
-                                <p>Ordena online y pasa sin hacer fila.</p>
+                                <h3 data-i18n="order.pickup">Store pickup</h3>
+                                <p data-i18n="order.pickup_d">Order online and skip the line.</p>
                             </div>
                         </article>
-
                         <article class="order-mode">
-                            <i class="fas fa-bag-shopping"></i>
+                            <i class="fas fa-bag-shopping" aria-hidden="true"></i>
                             <div>
-                                <h3>Para llevar</h3>
-                                <p>Tu café listo para salir.</p>
+                                <h3 data-i18n="order.togo">To go</h3>
+                                <p data-i18n="order.togo_d">Your coffee ready to walk out.</p>
                             </div>
                         </article>
-
-                        <article class="order-mode">
-                            <i class="fas fa-motorcycle"></i>
+                        <article class="order-mode" id="deliveryMode" style="display:none;">
+                            <i class="fas fa-motorcycle" aria-hidden="true"></i>
                             <div>
-                                <h3>Delivery</h3>
-                                <p>Llévatelo a casa u oficina.</p>
+                                <h3 data-i18n="order.delivery">Delivery</h3>
+                                <p data-i18n="order.delivery_d">Delivered to your home or office.</p>
                             </div>
                         </article>
                     </div>
 
-                    <a href="menu.html" class="order-main-btn">
-                        Ver menú y ordenar
+                    <a href="menu.html" class="order-main-btn" data-i18n="order.cta">
+                        View menu &amp; order
                     </a>
                 </div>
 
             </div>
         </section>
 
-
-
-        <!-- ================= ORDEN ONLINE ================= -->
-        <section id="orden" class="section order-section" aria-labelledby="order-title">
+        <!-- ── DELIVERY PARTNERS ── -->
+        <section class="section order-section" aria-labelledby="delivery-title">
             <div class="container">
                 <div class="order-grid">
-                    
-
                     <div class="order-content">
-                        <h2 id="order-title">Ordena en línea ahora</h2>
-                        <p>Disfruta nuestro café desde donde estés con nuestros socios de delivery</p>
-
-                        <div class="delivery-partners">
-                            <a href="#" class="delivery-partner" aria-label="Ordenar por Uber Eats">
-                                <img src="images/ubereats.png" alt="Uber Eats" loading="lazy">
-                            </a>
-                            <a href="#" class="delivery-partner" aria-label="Ordenar por Rappi">
-                                <img src="images/rappi.png" alt="Rappi" loading="lazy">
-                            </a>
-                            <a href="#" class="delivery-partner" aria-label="Ordenar por PedidosYa">
-                                <img src="images/rappi.png" alt="PedidosYa" loading="lazy">
-                            </a>
+                        <h2 id="delivery-title" data-i18n="delivery.title">Order online now</h2>
+                        <p data-i18n="delivery.desc">Get our coffee delivered through our partners</p>
+                        <div class="delivery-partners" id="deliveryPartners">
+                            <!-- Populated by JS from business_settings -->
                         </div>
-
                     </div>
                     <div class="order-image">
-                        <img src="images/Delivery.png" alt="Servicio de delivery de Atalia Café" loading="lazy">
+                        <img src="images/Delivery.png" alt="Atalia Café delivery service" loading="lazy">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= RESEÑAS ================= -->
+        <!-- ── REVIEWS ── -->
         <section class="section reviews-section" aria-labelledby="reviews-title">
             <div class="container">
-                <h2 id="reviews-title" class="section-title">Lo que dicen nuestros clientes</h2>
-
-                <div id="reviews-container" class="reviews-container">
-                    <!-- Las reseñas se cargarán dinámicamente -->
-                    <div class="loading-reviews">
-                        <div class="spinner"></div>
-                        <p>Cargando reseñas...</p>
-                    </div>
+                <h2 id="reviews-title" class="section-title" data-i18n="reviews.title">
+                    What our customers say
+                </h2>
+                <div id="reviewsContainer" class="reviews-grid">
+                    <p style="text-align:center;color:var(--text-light);grid-column:1/-1;" data-i18n="reviews.loading">
+                        Loading reviews...</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= CONTACTO ================= -->
-        <section id="contacto" class="section contact-section" aria-labelledby="contact-title">
+        <!-- ── CONTACT ── -->
+        <section id="contact" class="section contact-section" aria-labelledby="contact-title">
             <div class="container">
-                <h2 id="contact-title" class="section-title">Visítanos</h2>
+                <h2 id="contact-title" class="section-title" data-i18n="contact.title">Visit us</h2>
 
                 <div class="contact-grid">
+
+                    <!-- Map -->
                     <div class="map-container">
-                        <div class="map-wrapper">
-                            <iframe src="https://www.google.com/maps/embed?pb=0x89c2f92dea455555:0x11a996cd1d60a962"
-                                width="100%" height="400" style="border:0;" allowfullscreen loading="lazy"
-                                title="Ubicación de Atalia Café en Google Maps">
-                            </iframe>
+                        <div class="map-wrapper" id="mapWrapper">
+                            <!-- Populated by JS from business_settings -->
                         </div>
                     </div>
 
-                    <div class="location-image">
-                        <img src="images/local.PNG" alt="Fachada de Atalia Café" loading="lazy">
+                    <!-- Info -->
+                    <div class="contact-info">
+
+                        <div class="contact-info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong id="contactAddress">—</strong>
+                                <p id="contactCityState" style="color:var(--text-light);font-size:.9rem;"></p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <i class="fas fa-phone"></i>
+                            <a id="contactPhone" href="#" style="color:var(--text-light);font-size:.9rem;">—</a>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <i class="fas fa-envelope"></i>
+                            <a id="contactEmail" href="#" style="color:var(--text-light);font-size:.9rem;">—</a>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong data-i18n="contact.hours"
+                                    style="display:block;margin-bottom:8px;">Hours</strong>
+                                <table class="hours-table" id="hoursTable" aria-label="Business hours">
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
             </div>
         </section>
+
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="footer" aria-label="Pie de página">
+    <!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+    <footer class="footer" aria-label="Site footer">
         <div class="container">
             <div class="footer-grid">
+
                 <div class="footer-brand">
-                    <a href="/" class="footer-logo" aria-label="Atalia Café - Inicio">
+                    <a href="index.html" class="footer-logo" aria-label="Atalia Café — Home">
                         <span class="logo-text">Atalia Café</span>
                     </a>
-                    <p class="footer-tagline">Café de calidad desde 2023</p>
+                    <p class="footer-tagline" data-i18n="footer.tagline">Quality coffee since 2023</p>
                 </div>
 
-                <nav class="footer-nav" aria-label="Enlaces del pie de página">
+                <nav class="footer-nav" aria-label="Footer navigation">
                     <div class="footer-nav-group">
-                        <h3 class="footer-nav-title">Navegación</h3>
+                        <h3 class="footer-nav-title" data-i18n="footer.nav">Navigation</h3>
                         <ul class="footer-nav-list">
-                            <li><a href="#inicio">Inicio</a></li>
-                            <li><a href="#menu">Menú</a></li>
-                            <li><a href="#diferencial">Experiencia</a></li>
-                            <li><a href="#orden">Ordenar</a></li>
+                            <li><a href="#home" data-i18n="nav.home">Home</a></li>
+                            <li><a href="menu.html" data-i18n="nav.menu">Menu</a></li>
+                            <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
+                            <li><a href="#order" data-i18n="nav.order">Order</a></li>
                         </ul>
                     </div>
-
                     <div class="footer-nav-group">
-                        <h3 class="footer-nav-title">Legal</h3>
+                        <h3 class="footer-nav-title" data-i18n="footer.legal">Legal</h3>
                         <ul class="footer-nav-list">
-                            <li><a href="#">Términos y condiciones</a></li>
-                            <li><a href="#">Política de privacidad</a></li>
-                            <li><a href="#">Política de reembolso</a></li>
+                            <li><a href="terms.html" data-i18n="footer.terms">Terms &amp; conditions</a></li>
+                            <li><a href="privacy.html" data-i18n="footer.privacy">Privacy policy</a></li>
+                            <li><a href="refund.html" data-i18n="footer.refund">Refund policy</a></li>
                         </ul>
                     </div>
                 </nav>
 
                 <div class="footer-contact">
-                    <h3 class="footer-nav-title">Síguenos</h3>
-                    <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Facebook de Atalia Café">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram de Atalia Café">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="mailto:info@atalia.cafe" class="social-link" aria-label="Enviar correo a Atalia Café">
-                            <i class="fas fa-envelope"></i>
-                        </a>
+                    <h3 class="footer-nav-title" data-i18n="footer.follow">Follow us</h3>
+                    <div class="social-links" id="socialLinks">
+                        <!-- Populated from business_settings -->
                     </div>
                 </div>
+
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2026 Atalia Café. Todos los derechos reservados.</p>
+                <p data-i18n="footer.copy">&copy; 2026 Atalia Café. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="js/main.js" defer></script>
-    <script src="js/reviews.js" defer></script>
+    <!-- Toast container -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+    <script type="module">
+        import { sb, getSettings, getCurrentLang, formatPrice, addToCart, updateCartBadge, sanitize } from './js/supabase.js';
+        import { initI18n, t } from './js/i18n.js';
+
+        // ── Init ─────────────────────────────────
+        initI18n();
+        updateCartBadge();
+
+        // ── Load everything from Supabase ────────
+        const settings = await getSettings();
+        applySettings(settings);
+        await loadCategories();
+        loadDeliveryPartners(settings);
+        loadSocialLinks(settings);
+        loadHours(settings);
+        loadReviews();
+        initNav();
+
+        // ── Apply business settings to page ─────
+        function applySettings(s) {
+            // SEO
+            if (s.meta_title) document.title = s.meta_title;
+            if (s.meta_description) document.querySelector('meta[name="description"]')?.setAttribute('content', s.meta_description);
+
+            // Contact info
+            if (s.address) document.getElementById('contactAddress').textContent = s.address;
+            if (s.city || s.state) {
+                document.getElementById('contactCityState').textContent =
+                    [s.city, s.state, s.zip_code].filter(Boolean).join(', ');
+            }
+            if (s.phone) {
+                const el = document.getElementById('contactPhone');
+                el.href = `tel:${s.phone.replace(/\D/g, '')}`;
+                el.textContent = s.phone;
+            }
+            if (s.email) {
+                const el = document.getElementById('contactEmail');
+                el.href = `mailto:${s.email}`;
+                el.textContent = s.email;
+            }
+
+            // Map
+            if (s.google_maps_url) {
+                document.getElementById('mapWrapper').innerHTML = `
+      <iframe src="${sanitize(s.google_maps_url)}"
+        width="100%" height="400" style="border:0;border-radius:var(--radius-lg);"
+        allowfullscreen loading="lazy"
+        title="Atalia Café location on Google Maps">
+      </iframe>`;
+            } else if (s.lat && s.lng) {
+                document.getElementById('mapWrapper').innerHTML = `
+      <iframe
+        src="https://www.google.com/maps?q=${s.lat},${s.lng}&z=16&output=embed"
+        width="100%" height="400" style="border:0;border-radius:var(--radius-lg);"
+        allowfullscreen loading="lazy"
+        title="Atalia Café location on Google Maps">
+      </iframe>`;
+            }
+
+            // Show delivery mode option if delivery is enabled
+            if (s.delivery_enabled) {
+                document.getElementById('deliveryMode').style.display = '';
+            }
+        }
+
+        // ── Categories → Tabs ────────────────────
+        let currentCategory = null;
+        let allCategories = [];
+
+        async function loadCategories() {
+            const lang = getCurrentLang();
+            const { data: cats } = await sb
+                .from('categories')
+                .select('*')
+                .eq('active', true)
+                .order('sort_order')
+                .limit(6); // Show max 6 on homepage
+
+            if (!cats?.length) return;
+            allCategories = cats;
+            currentCategory = cats[0].id;
+
+            // Render tabs
+            const tabsEl = document.getElementById('categoryTabs');
+            tabsEl.innerHTML = cats.map((c, i) => `
+    <button
+      class="tab-button ${i === 0 ? 'active' : ''}"
+      data-cat="${sanitize(c.id)}"
+      role="tab"
+      aria-selected="${i === 0}"
+      id="tab-${sanitize(c.id)}">
+      ${sanitize(lang === 'es' && c.name_es ? c.name_es : c.name_en)}
+    </button>`
+            ).join('');
+
+            // Wire tab clicks
+            tabsEl.querySelectorAll('.tab-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabsEl.querySelectorAll('.tab-button').forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    currentCategory = btn.dataset.cat;
+                    loadProducts(currentCategory);
+                });
+            });
+
+            // Load first category products
+            await loadProducts(currentCategory);
+        }
+
+        // ── Products ─────────────────────────────
+        async function loadProducts(categoryId) {
+            const lang = getCurrentLang();
+            const grid = document.getElementById('menuGrid');
+
+            // Show skeletons
+            grid.innerHTML = Array(3).fill(`
+    <div class="menu-card loading-card">
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line short"></div>
+    </div>`).join('');
+
+            const { data: products } = await sb
+                .from('products')
+                .select('*')
+                .eq('category_id', categoryId)
+                .eq('active', true)
+                .order('sort_order')
+                .limit(4);
+
+            if (!products?.length) {
+                grid.innerHTML = `
+      <div class="no-items-message" style="grid-column:1/-1;">
+        <i class="fas fa-coffee"></i>
+        <h3>${t('menu.no_products')}</h3>
+      </div>`;
+                return;
+            }
+
+            grid.innerHTML = products.map(p => {
+                const name = sanitize(lang === 'es' && p.name_es ? p.name_es : p.name_en);
+                const desc = sanitize(lang === 'es' && p.description_es ? p.description_es : (p.description_en || ''));
+                const price = formatPrice(p.price, settings);
+                const soldOut = p.stock_enabled && !p.in_stock;
+
+                return `
+      <div class="menu-card">
+        <div class="img-wrap">
+          ${p.featured ? `<span class="badge-featured">${t('menu.featured')}</span>` : ''}
+          ${p.image_url
+                        ? `<img src="${sanitize(p.image_url)}" alt="${name}" loading="lazy"
+                    onerror="this.src='images/hero.png'">`
+                        : `<div style="width:100%;height:200px;background:var(--accent-color);display:flex;align-items:center;justify-content:center;font-size:3rem;">☕</div>`
+                    }
+        </div>
+        <div class="card-content">
+          <h3>
+            ${name}
+            ${p.vegetarian ? '<i class="fas fa-leaf" style="color:var(--primary-color);font-size:.75rem;margin-left:4px;" title="Vegetarian"></i>' : ''}
+            ${soldOut ? `<span class="badge-sold-out">${t('menu.sold_out')}</span>` : ''}
+          </h3>
+          <p class="card-desc">${desc}</p>
+          <div class="card-footer">
+            <span class="card-price">${price}</span>
+            <button
+              class="card-add"
+              data-id="${sanitize(p.id)}"
+              ${soldOut ? 'disabled' : ''}
+              aria-label="Add ${name} to cart">
+              ${soldOut ? t('menu.sold_out') : t('menu.add')}
+            </button>
+          </div>
+        </div>
+      </div>`;
+            }).join('');
+
+            // Wire add buttons
+            grid.querySelectorAll('.card-add:not(:disabled)').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const p = products.find(x => x.id === id);
+                    if (!p) return;
+
+                    // If product has sizes/extras → go to menu page
+                    addToCart({
+                        id: p.id,
+                        name_en: p.name_en,
+                        name_es: p.name_es,
+                        price: p.price,
+                        image_url: p.image_url,
+                        category_id: p.category_id,
+                        size: null,
+                        extras: [],
+                        qty: 1,
+                    });
+
+                    btn.textContent = t('menu.added');
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.textContent = t('menu.add');
+                        btn.disabled = false;
+                    }, 1200);
+
+                    updateCartBadge();
+                    showToast(`${sanitize(p.name_en)} added to cart`, 'success');
+                });
+            });
+        }
+
+        // ── Delivery partners ────────────────────
+        function loadDeliveryPartners(s) {
+            const el = document.getElementById('deliveryPartners');
+            const partners = [];
+
+            if (s?.uber_eats_url) {
+                partners.push(`
+      <a href="${sanitize(s.uber_eats_url)}" class="delivery-partner"
+         target="_blank" rel="noopener noreferrer" aria-label="Order on Uber Eats">
+        <img src="images/ubereats.png" alt="Uber Eats" loading="lazy">
+      </a>`);
+            }
+            if (s?.doordash_url) {
+                partners.push(`
+      <a href="${sanitize(s.doordash_url)}" class="delivery-partner"
+         target="_blank" rel="noopener noreferrer" aria-label="Order on DoorDash">
+        <img src="images/doordash.png" alt="DoorDash" loading="lazy">
+      </a>`);
+            }
+
+            el.innerHTML = partners.length
+                ? partners.join('')
+                : `<p style="color:var(--text-light);font-size:.9rem;">Coming soon on delivery platforms.</p>`;
+        }
+
+        // ── Social links ─────────────────────────
+        function loadSocialLinks(s) {
+            const el = document.getElementById('socialLinks');
+            const links = [
+                { url: s?.instagram_url, icon: 'fab fa-instagram', label: 'Instagram' },
+                { url: s?.facebook_url, icon: 'fab fa-facebook-f', label: 'Facebook' },
+                { url: s?.tiktok_url, icon: 'fab fa-tiktok', label: 'TikTok' },
+                { url: s?.email ? `mailto:${s.email}` : null, icon: 'fas fa-envelope', label: 'Email' },
+            ].filter(l => l.url);
+
+            el.innerHTML = links.map(l => `
+    <a href="${sanitize(l.url)}" class="social-link"
+       target="${l.url.startsWith('mailto') ? '_self' : '_blank'}"
+       rel="noopener noreferrer"
+       aria-label="${sanitize(l.label)} — Atalia Café">
+      <i class="${l.icon}" aria-hidden="true"></i>
+    </a>`).join('');
+        }
+
+        // ── Business hours ───────────────────────
+        function loadHours(s) {
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            const labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const today = new Date().getDay(); // 0=Sun,1=Mon...
+            // Remap: JS Sunday=0 → our array Sunday=6
+            const todayIdx = today === 0 ? 6 : today - 1;
+
+            const tbody = document.querySelector('#hoursTable tbody');
+            tbody.innerHTML = days.map((d, i) => {
+                const hours = s?.[`${d}_hours`];
+                const isToday = i === todayIdx;
+                return `
+      <tr class="${isToday ? 'today' : ''}">
+        <td>${labels[i]}</td>
+        <td>${hours || '<span style="color:var(--text-light);">Closed</span>'}</td>
+      </tr>`;
+            }).join('');
+        }
+
+        // ── Reviews (static for now) ─────────────
+        // Phase 2: pull from Google Places API or Supabase reviews table
+        function loadReviews() {
+            const reviews = [
+                { stars: 5, text: 'Best coffee in the neighborhood. The Caramel Macchiato is absolutely amazing!', author: 'Sarah M.' },
+                { stars: 5, text: 'Cozy atmosphere and incredibly friendly staff. My go-to spot every morning.', author: 'James R.' },
+                { stars: 5, text: 'The pastries are fresh daily and the matcha latte is to die for. Highly recommend!', author: 'Emily T.' },
+            ];
+
+            document.getElementById('reviewsContainer').innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-stars" aria-label="${r.stars} out of 5 stars">
+        ${'<i class="fas fa-star" aria-hidden="true"></i>'.repeat(r.stars)}
+      </div>
+      <p class="review-text">"${sanitize(r.text)}"</p>
+      <span class="review-author">— ${sanitize(r.author)}</span>
+    </div>`).join('');
+        }
+
+        // ── Toast ────────────────────────────────
+        function showToast(msg, type = '') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas fa-check-circle" aria-hidden="true"></i> ${sanitize(msg)}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        // ── Hamburger nav ────────────────────────
+        function initNav() {
+            const ham = document.getElementById('hamburger');
+            const nav = document.getElementById('nav-links');
+            if (!ham || !nav) return;
+
+            ham.addEventListener('click', () => {
+                const open = nav.classList.toggle('active');
+                ham.setAttribute('aria-expanded', open);
+                ham.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+            });
+
+            // Close on nav link click (mobile)
+            nav.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('active');
+                    ham.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // Scroll-based navbar shadow
+            window.addEventListener('scroll', () => {
+                document.querySelector('.navbar').style.boxShadow =
+                    window.scrollY > 10 ? 'var(--shadow-md)' : 'var(--shadow-sm)';
+            }, { passive: true });
+        }
+
+        // ── Cart badge on cart update ────────────
+        window.addEventListener('atalia:cart-updated', updateCartBadge);
+    </script>
+
 </body>
 
 </html>

@@ -1,534 +1,1317 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Menú - Atalia Café</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Descubre nuestro menú completo de cafés, bebidas frías, panadería y postres en Atalia Café.">
-    
-    <!-- Preconexiones -->
+    <title>Menu — Atalia Café</title>
+    <meta name="description"
+        content="Explore Atalia Café's full menu — hot coffee, cold drinks, matcha, bakery, sandwiches and more.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Fuentes -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Iconos -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CSS -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/menu.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <style>
+        /* ── Lang toggle ── */
+        .lang-toggle {
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: .8rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all .25s ease;
+            letter-spacing: .04em;
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        /* ── Cart badge ── */
+        .nav-cart {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-cart .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--secondary-color);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 700;
+        }
+
+        /* ── Search bar ── */
+        .menu-search-wrap {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+            background: var(--light-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .menu-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 999px;
+            padding: 10px 18px;
+            transition: border-color .2s;
+        }
+
+        .menu-search:focus-within {
+            border-color: var(--primary-color);
+        }
+
+        .menu-search i {
+            color: var(--text-light);
+            font-size: .9rem;
+        }
+
+        .menu-search input {
+            border: none;
+            background: none;
+            outline: none;
+            font-family: var(--font-body);
+            font-size: .95rem;
+            color: var(--dark-color);
+            flex: 1;
+        }
+
+        .menu-search input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: .85rem;
+            padding: 0;
+            display: none;
+        }
+
+        .search-clear.show {
+            display: block;
+        }
+
+        /* ── Store selector modal ── */
+        .store-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .store-modal.active {
+            display: flex;
+        }
+
+        .store-modal-box {
+            background: var(--light-color);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+            animation: slideUp .35s ease;
+        }
+
+        .store-modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 6px;
+        }
+
+        .store-modal-sub {
+            color: var(--text-light);
+            font-size: .9rem;
+            margin-bottom: var(--space-lg);
+        }
+
+        .store-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .store-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .store-item:hover {
+            border-color: var(--primary-color);
+            background: rgba(107, 127, 90, .04);
+        }
+
+        .store-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(107, 127, 90, .06);
+        }
+
+        .store-item-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(107, 127, 90, .1);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .store-item-name {
+            font-weight: 600;
+            font-size: .95rem;
+        }
+
+        .store-item-addr {
+            font-size: .8rem;
+            color: var(--text-light);
+        }
+
+        .store-item-check {
+            margin-left: auto;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .store-item.selected .store-item-check {
+            display: block;
+        }
+
+        /* ── Nutritional info pills ── */
+        .nutrition-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .nutrition-pill {
+            background: var(--accent-color);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: .75rem;
+            color: var(--text-light);
+        }
+
+        .nutrition-pill strong {
+            color: var(--dark-color);
+        }
+
+        /* ── Sold out overlay ── */
+        .product-image-compact.sold-out::after {
+            content: 'Sold out';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: .8rem;
+            letter-spacing: .05em;
+        }
+
+        /* ── Product modal footer ── */
+        .modal-product-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--light-color);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-add-btn {
+            flex: 1;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 14px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-add-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .modal-add-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .modal-total {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            white-space: nowrap;
+        }
+
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--dark-color);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 999px;
+            font-size: .875rem;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+            animation: toastIn .3s ease both;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .toast.success {
+            background: var(--primary-color);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ── Empty search state ── */
+        .search-empty {
+            text-align: center;
+            padding: var(--space-xxl) var(--space-lg);
+            color: var(--text-light);
+        }
+
+        .search-empty i {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-md);
+            display: block;
+            opacity: .4;
+        }
+
+        /* ── Skeleton cards ── */
+        .product-card-skeleton {
+            background: var(--light-color);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .sk-img {
+            width: 100%;
+            padding-bottom: 100%;
+            background: #f0f0f0;
+        }
+
+        .sk-line {
+            height: 12px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin: 8px;
+        }
+
+        .sk-line.short {
+            width: 60%;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position-x: -200%;
+            }
+        }
+
+        /* ── Customization section ── */
+        .customization-section {
+            margin: 16px 0;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .customization-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .customization-title {
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .customization-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .customization-option {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 500;
+            background: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: all .2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .customization-option small {
+            font-size: .7rem;
+            color: var(--text-light);
+        }
+
+        .customization-option:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .customization-option.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .customization-option.selected small {
+            color: rgba(255, 255, 255, .8);
+        }
+
+        /* ── Quantity selector ── */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            background: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            font-family: var(--font-body);
+        }
+
+        .quantity-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .quantity-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body class="menu-page">
-    <!-- Skip link -->
-    <a href="#main-menu" class="skip-link">Saltar al menú principal</a>
-    
-    <!-- ================= HEADER ================= -->
+
+    <!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
     <header class="header">
-        <nav class="navbar" aria-label="Navegación principal">
-            <a href="index.html" class="logo" aria-label="Atalia Café - Inicio">
+        <nav class="navbar" aria-label="Main navigation">
+            <a href="index.html" class="logo" aria-label="Atalia Café — Home">
                 <span class="logo-text">Atalia Café</span>
             </a>
-            
-            <button class="hamburger" id="hamburger" aria-label="Menú de navegación" aria-expanded="false">
+
+            <button class="hamburger" id="hamburger" aria-label="Open navigation" aria-expanded="false">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            
+
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html" class="nav-link">Inicio</a></li>
-                <li><a href="menu.html" class="nav-link active">Menú</a></li>
-                <li><a href="index.html#diferencial" class="nav-link">Experiencia</a></li>
-                <li><a href="index.html#orden" class="nav-link">Ordenar</a></li>
-                <li><a href="index.html#contacto" class="nav-link">Contacto</a></li>
+                <li><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
+                <li><a href="menu.html" class="nav-link" data-i18n="nav.menu">Menu</a></li>
+                <li><a href="index.html#experience" class="nav-link" data-i18n="nav.experience">Experience</a></li>
+                <li><a href="index.html#order" class="nav-link" data-i18n="nav.order">Order</a></li>
+                <li><a href="index.html#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
+                <li>
+                    <a href="cart.html" class="nav-link nav-cart" aria-label="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" aria-live="polite"></span>
+                    </a>
+                </li>
+                <li>
+                    <button class="lang-toggle" aria-label="Switch to Spanish">ES</button>
+                </li>
             </ul>
         </nav>
-    </header>
-    
-    <!-- ================= MAIN CONTENT ================= -->
-    <main id="main-menu">
-        <!-- ================= HERO MENÚ ================= -->
-        <!-- ================= SUBHEADER DEL MENÚ (Minimalista) ================= -->
-<div class="menu-subheader">
-    <div class="container">
-        <div class="subheader-content">
-            <div class="subheader-text">
-                <h1 class="subheader-title">Nuestro Menú</h1>
-                <p class="subheader-subtitle">Descubre nuestras bebidas y alimentos favoritos</p>
-            </div>
-            
-            <div class="subheader-actions">
-                <!-- Selector de tienda muy compacto -->
-                <div class="store-selector-compact">
-                    <div class="store-selector-compact-header">
-                        <i class="fas fa-store"></i>
-                        <span>Para ver disponibilidad</span>
+
+        <!-- ── Subheader (store selector) ── -->
+        <div class="menu-subheader">
+            <div class="container subheader-content">
+                <div class="subheader-text">
+                    <div class="subheader-title">Our Menu</div>
+                    <div class="subheader-subtitle">Order online for pickup or delivery</div>
+                </div>
+                <div class="subheader-actions">
+                    <div class="store-selector-compact" id="storeSelectorCompact">
+                        <div class="store-selector-compact-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span data-i18n="menu_page.store_label">Pick up at</span>
+                        </div>
+                        <button class="store-selector-compact-btn" id="storeBtn" onclick="openStoreModal()">
+                            <span id="storeBtnLabel" data-i18n="menu_page.select_store">Select a store</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
                     </div>
-                    <button class="store-selector-compact-btn" id="store-selector">
-                        <span id="store-selected-text">Elige una tienda</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-        
-        <!-- ================= MENÚ PRINCIPAL ================= -->
+    </header>
+
+    <!-- ═══════════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════════ -->
+    <main>
         <div class="menu-container">
-            <!-- Sidebar de categorías -->
-            <aside class="menu-sidebar" aria-label="Categorías del menú">
-                <nav class="sidebar-nav">
+
+            <!-- ── SIDEBAR ── -->
+            <aside class="menu-sidebar" id="menuSidebar" aria-label="Menu categories">
+                <nav class="sidebar-nav" id="sidebarNav">
+                    <!-- Populated by JS -->
                     <div class="sidebar-section">
-                        <h3 class="sidebar-title">Favoritos</h3>
-                        <ul class="sidebar-list">
-                            <li><a href="#trending" class="sidebar-link active" data-category="trending">
-                                <i class="fas fa-fire"></i> Trending
-                            </a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="sidebar-section">
-                        <h3 class="sidebar-title">Bebidas</h3>
-                        <ul class="sidebar-list">
-                            <li><a href="#protein" class="sidebar-link" data-category="protein">
-                                <i class="fas fa-dumbbell"></i> Proteínas
-                            </a></li>
-                            <li><a href="#hot-coffee" class="sidebar-link" data-category="hot-coffee">
-                                <i class="fas fa-mug-hot"></i> Café Caliente
-                            </a></li>
-                            <li><a href="#cold-coffee" class="sidebar-link" data-category="cold-coffee">
-                                <i class="fas fa-glass-water"></i> Café Frío
-                            </a></li>
-                            <li><a href="#matcha" class="sidebar-link" data-category="matcha">
-                                <i class="fas fa-leaf"></i> Matcha
-                            </a></li>
-                            <li><a href="#hot-tea" class="sidebar-link" data-category="hot-tea">
-                                <i class="fas fa-mug-saucer"></i> Té Caliente
-                            </a></li>
-                            <li><a href="#cold-tea" class="sidebar-link" data-category="cold-tea">
-                                <i class="fas fa-glass-martini-alt"></i> Té Frío
-                            </a></li>
-                            <li><a href="#refreshers" class="sidebar-link" data-category="refreshers">
-                                <i class="fas fa-glass-whiskey"></i> Refreshers
-                            </a></li>
-                            <li><a href="#frappuccino" class="sidebar-link" data-category="frappuccino">
-                                <i class="fas fa-blender"></i> Frappuccino®
-                            </a></li>
-                            <li><a href="#hot-chocolate" class="sidebar-link" data-category="hot-chocolate">
-                                <i class="fas fa-mug-hot"></i> Chocolate & Más
-                            </a></li>
-                            <li><a href="#bottled" class="sidebar-link" data-category="bottled">
-                                <i class="fas fa-wine-bottle"></i> Bebidas Embotelladas
-                            </a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="sidebar-section">
-                        <h3 class="sidebar-title">Alimentos</h3>
-                        <ul class="sidebar-list">
-                            <li><a href="#bakery" class="sidebar-link" data-category="bakery">
-                                <i class="fas fa-bread-slice"></i> Panadería
-                            </a></li>
-                            <li><a href="#sandwiches" class="sidebar-link" data-category="sandwiches">
-                                <i class="fas fa-hamburger"></i> Sándwiches
-                            </a></li>
-                            <li><a href="#desserts" class="sidebar-link" data-category="desserts">
-                                <i class="fas fa-ice-cream"></i> Postres
-                            </a></li>
-                            <li><a href="#snacks" class="sidebar-link" data-category="snacks">
-                                <i class="fas fa-cookie-bite"></i> Snacks
-                            </a></li>
-                        </ul>
+                        <div class="sidebar-list" id="sidebarList">
+                            <div class="skeleton" style="height:40px;border-radius:8px;margin-bottom:4px;"></div>
+                            <div class="skeleton" style="height:40px;border-radius:8px;margin-bottom:4px;"></div>
+                            <div class="skeleton" style="height:40px;border-radius:8px;margin-bottom:4px;"></div>
+                            <div class="skeleton" style="height:40px;border-radius:8px;margin-bottom:4px;"></div>
+                            <div class="skeleton" style="height:40px;border-radius:8px;margin-bottom:4px;"></div>
+                        </div>
                     </div>
                 </nav>
             </aside>
-            
-            <!-- Contenido principal del menú -->
-            <div class="menu-content">
-                <!-- Trending -->
-                <section id="trending" class="menu-category active" data-category="trending">
-                    <div class="category-header">
-                        <h2 class="category-title">Trending</h2>
-                        <p class="category-description">Los favoritos de nuestros clientes</p>
+
+            <!-- ── CONTENT ── -->
+            <div class="menu-content" id="menuContent">
+
+                <!-- Search -->
+                <div class="menu-search-wrap">
+                    <div class="menu-search">
+                        <i class="fas fa-search"></i>
+                        <input type="search" id="searchInput" data-i18n-placeholder="menu_page.search"
+                            placeholder="Search products..." autocomplete="off" aria-label="Search menu">
+                        <button class="search-clear" id="searchClear" aria-label="Clear search">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
+                </div>
+
+                <!-- Categories (generated by JS) -->
+                <div id="categoriesContainer">
+                    <!-- Skeleton -->
+                    <div style="padding: var(--space-lg);">
+                        <div class="skeleton" style="height:32px;width:200px;border-radius:8px;margin-bottom:24px;">
+                        </div>
+                        <div class="category-grid">
+                            <div class="product-card-skeleton">
+                                <div class="sk-img"></div>
+                                <div class="sk-line"></div>
+                                <div class="sk-line short"></div>
+                            </div>
+                            <div class="product-card-skeleton">
+                                <div class="sk-img"></div>
+                                <div class="sk-line"></div>
+                                <div class="sk-line short"></div>
+                            </div>
+                            <div class="product-card-skeleton">
+                                <div class="sk-img"></div>
+                                <div class="sk-line"></div>
+                                <div class="sk-line short"></div>
+                            </div>
+                            <div class="product-card-skeleton">
+                                <div class="sk-img"></div>
+                                <div class="sk-line"></div>
+                                <div class="sk-line short"></div>
+                            </div>
+                        </div>
                     </div>
-                </section>
-                
-                <!-- Café Caliente -->
-                <section id="hot-coffee" class="menu-category" data-category="hot-coffee">
-                    <div class="category-header">
-                        <h2 class="category-title">Café Caliente</h2>
-                        <p class="category-description">Nuestros cafés preparados al momento</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Café Frío -->
-                <section id="cold-coffee" class="menu-category" data-category="cold-coffee">
-                    <div class="category-header">
-                        <h2 class="category-title">Café Frío</h2>
-                        <p class="category-description">Refrescantes y perfectos para cualquier momento</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Matcha -->
-                <section id="matcha" class="menu-category" data-category="matcha">
-                    <div class="category-header">
-                        <h2 class="category-title">Matcha</h2>
-                        <p class="category-description">Tradición japonesa en cada sorbo</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Té Caliente -->
-                <section id="hot-tea" class="menu-category" data-category="hot-tea">
-                    <div class="category-header">
-                        <h2 class="category-title">Té Caliente</h2>
-                        <p class="category-description">Infusiones aromáticas y reconfortantes</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Té Frío -->
-                <section id="cold-tea" class="menu-category" data-category="cold-tea">
-                    <div class="category-header">
-                        <h2 class="category-title">Té Frío</h2>
-                        <p class="category-description">Refrescantes infusiones heladas</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Refreshers -->
-                <section id="refreshers" class="menu-category" data-category="refreshers">
-                    <div class="category-header">
-                        <h2 class="category-title">Refreshers</h2>
-                        <p class="category-description">Bebidas frutales refrescantes</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Frappuccino -->
-                <section id="frappuccino" class="menu-category" data-category="frappuccino">
-                    <div class="category-header">
-                        <h2 class="category-title">Frappuccino® Blended Beverage</h2>
-                        <p class="category-description">Bebidas cremosas y heladas</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Chocolate & Más -->
-                <section id="hot-chocolate" class="menu-category" data-category="hot-chocolate">
-                    <div class="category-header">
-                        <h2 class="category-title">Chocolate, Limonada & Más</h2>
-                        <p class="category-description">Bebidas clásicas y reconfortantes</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Bebidas Embotelladas -->
-                <section id="bottled" class="menu-category" data-category="bottled">
-                    <div class="category-header">
-                        <h2 class="category-title">Bebidas Embotelladas</h2>
-                        <p class="category-description">Para llevar</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Proteínas -->
-                <section id="protein" class="menu-category" data-category="protein">
-                    <div class="category-header">
-                        <h2 class="category-title">Bebidas Proteínicas</h2>
-                        <p class="category-description">Energía y nutrición en cada sorbo</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Panadería -->
-                <section id="bakery" class="menu-category" data-category="bakery">
-                    <div class="category-header">
-                        <h2 class="category-title">Panadería</h2>
-                        <p class="category-description">Fresca y artesanal</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Sándwiches -->
-                <section id="sandwiches" class="menu-category" data-category="sandwiches">
-                    <div class="category-header">
-                        <h2 class="category-title">Sándwiches</h2>
-                        <p class="category-description">Deliciosos y satisfactorios</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Postres -->
-                <section id="desserts" class="menu-category" data-category="desserts">
-                    <div class="category-header">
-                        <h2 class="category-title">Postres</h2>
-                        <p class="category-description">Dulces tentaciones</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-                
-                <!-- Snacks -->
-                <section id="snacks" class="menu-category" data-category="snacks">
-                    <div class="category-header">
-                        <h2 class="category-title">Snacks</h2>
-                        <p class="category-description">Pequeños gustos</p>
-                    </div>
-                    
-                    <div class="category-grid">
-                        <!-- Las tarjetas se generarán con JavaScript -->
-                    </div>
-                </section>
-            </div>
-        </div>
+                </div>
+
+            </div><!-- /menu-content -->
+        </div><!-- /menu-container -->
     </main>
-    
-    <!-- ================= FOOTER ================= -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="footer-logo" aria-label="Atalia Café - Inicio">
-                        <span class="logo-text">Atalia Café</span>
-                    </a>
-                    <p class="footer-tagline">Café de calidad desde 2023</p>
-                </div>
-                
-                <nav class="footer-nav" aria-label="Enlaces del pie de página">
-                    <div class="footer-nav-group">
-                        <h3 class="footer-nav-title">Navegación</h3>
-                        <ul class="footer-nav-list">
-                            <li><a href="index.html">Inicio</a></li>
-                            <li><a href="menu.html">Menú</a></li>
-                            <li><a href="index.html#orden">Ordenar</a></li>
-                            <li><a href="index.html#contacto">Contacto</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-nav-group">
-                        <h3 class="footer-nav-title">Legal</h3>
-                        <ul class="footer-nav-list">
-                            <li><a href="#">Términos y condiciones</a></li>
-                            <li><a href="#">Política de privacidad</a></li>
-                            <li><a href="#">Política de reembolso</a></li>
-                        </ul>
-                    </div>
-                </nav>
-                
-                <div class="footer-contact">
-                    <h3 class="footer-nav-title">Síguenos</h3>
-                    <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Facebook de Atalia Café">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram de Atalia Café">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="mailto:info@atalia.cafe" class="social-link" aria-label="Enviar correo a Atalia Café">
-                            <i class="fas fa-envelope"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2026 Atalia Café. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-    
-    <!-- Modal para selector de tienda -->
-    <div class="modal" id="store-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Elige una tienda</h3>
-                <button class="modal-close" id="modal-close" aria-label="Cerrar">
+
+    <!-- ═══════════════════════════════════════
+     PRODUCT MODAL
+═══════════════════════════════════════ -->
+    <div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalProductName">
+        <div class="modal-product-content">
+
+            <!-- Image -->
+            <div class="modal-product-header">
+                <img id="modalProductImg" src="" alt="">
+                <button class="modal-close-btn" onclick="closeProductModal()" aria-label="Close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="stores-list">
-                    <div class="store-item">
-                        <h4 class="store-name">Atalia Café Centro</h4>
-                        <p class="store-address">Av. Principal #123, Santo Domingo</p>
-                        <p class="store-hours"><i class="fas fa-clock"></i> 7:00 AM - 10:00 PM</p>
-                        <button class="btn btn-primary select-store-btn" data-store="1">Seleccionar</button>
-                    </div>
-                    <div class="store-item">
-                        <h4 class="store-name">Atalia Café Norte</h4>
-                        <p class="store-address">Calle Comercial #456, Santiago</p>
-                        <p class="store-hours"><i class="fas fa-clock"></i> 6:30 AM - 9:30 PM</p>
-                        <button class="btn btn-primary select-store-btn" data-store="2">Seleccionar</button>
-                    </div>
-                    <div class="store-item">
-                        <h4 class="store-name">Atalia Café Este</h4>
-                        <p class="store-address">Plaza del Sol #789, Punta Cana</p>
-                        <p class="store-hours"><i class="fas fa-clock"></i> 8:00 AM - 11:00 PM</p>
-                        <button class="btn btn-primary select-store-btn" data-store="3">Seleccionar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="product-modal" id="productModal">
-    <div class="modal-product-content">
-        <!-- Header con imagen -->
-        <div class="modal-product-header">
-            <img src="product-image.jpg" alt="Iced Matcha Latte">
-            <button class="modal-close-btn" aria-label="Cerrar modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <!-- Contenido con scroll -->
-        <div class="modal-product-scrollable">
-            <div class="modal-product-body">
-                <!-- Información del producto -->
+
+            <!-- Scrollable body -->
+            <div class="modal-product-scrollable">
                 <div class="modal-product-info">
-                    <h2 class="modal-product-title">Iced Matcha Latte</h2>
-                    <div class="modal-product-price">RD$ 195</div>
-                    <p class="modal-product-description">
-                        Matcha premium con leche y hielo. Preparado con matcha de grado ceremonial 
-                        batido a mano para una textura suave y cremosa.
-                    </p>
+                    <h2 class="modal-product-title" id="modalProductName"></h2>
+                    <div class="modal-product-price" id="modalProductPrice"></div>
+                    <p class="modal-product-description" id="modalProductDesc"></p>
+                    <div class="nutrition-pills" id="modalNutrition"></div>
                 </div>
-                
-                <!-- Sección de tamaños (sin duplicados) -->
-                <div class="size-section">
-                    <h3 class="size-title">
-                        <i class="fas fa-ruler"></i>
-                        Tamaño
-                    </h3>
-                    <div class="size-options">
-                        <div class="size-option selected" data-size="pequeno">
-                            Pequeño
-                        </div>
-                        <div class="size-option" data-size="mediano">
-                            Mediano
-                        </div>
-                        <div class="size-option" data-size="grande">
-                            Grande
-                        </div>
+
+                <!-- Sizes -->
+                <div class="customization-section" id="sizesSection" style="display:none;">
+                    <div class="customization-title">
+                        <i class="fas fa-glass-whiskey" aria-hidden="true"></i>
+                        <span data-i18n="menu_page.size">Size</span>
                     </div>
+                    <div class="customization-options" id="sizesContainer"></div>
                 </div>
-                
-                <!-- Sección de personalizaciones -->
+
+                <!-- Extras -->
+                <div class="customization-section" id="extrasSection" style="display:none;">
+                    <div class="customization-title">
+                        <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                        <span data-i18n="menu_page.extras">Extras</span>
+                    </div>
+                    <div class="customization-options" id="extrasContainer"></div>
+                </div>
+
+                <!-- Quantity -->
                 <div class="customization-section">
-                    <h3 class="customization-title">
-                        <i class="fas fa-sliders-h"></i>
-                        Tipo de Leche
-                    </h3>
-                    <div class="customization-options">
-                        <div class="customization-option selected" data-milk="entera">
-                            Entera
-                        </div>
-                        <div class="customization-option" data-milk="deslactosada">
-                            Deslactosada
-                        </div>
-                        <div class="customization-option" data-milk="almendra">
-                            Almendra
-                        </div>
-                        <div class="customization-option" data-milk="avena">
-                            Avena
-                        </div>
+                    <div class="customization-title">
+                        <i class="fas fa-hashtag" aria-hidden="true"></i>
+                        <span data-i18n="menu_page.qty">Quantity</span>
                     </div>
-                </div>
-                
-                <!-- Selector de cantidad -->
-                <div class="quantity-section">
-                    <h3 class="customization-title">
-                        <i class="fas fa-sort-amount-up"></i>
-                        Cantidad
-                    </h3>
                     <div class="quantity-selector">
-                        <button class="quantity-btn minus" aria-label="Reducir cantidad">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span class="quantity-display">1</span>
-                        <button class="quantity-btn plus" aria-label="Aumentar cantidad">
-                            <i class="fas fa-plus"></i>
-                        </button>
+                        <button class="quantity-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
+                        <span class="quantity-display" id="qtyDisplay">1</span>
+                        <button class="quantity-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
                     </div>
                 </div>
-                
-                <!-- Información adicional (ejemplo de contenido largo) -->
-                <div class="additional-info">
-                    <h3 class="customization-title">
-                        <i class="fas fa-info-circle"></i>
-                        Información Nutricional
-                    </h3>
-                    <p>Contenido aproximado por porción: 120 calorías, 4g de proteína, 18g de carbohidratos.</p>
-                    <p>El matcha contiene antioxidantes naturales y proporciona energía sostenida sin el bajón de cafeína.</p>
-                </div>
+
+            </div><!-- /scrollable -->
+
+            <!-- Footer -->
+            <div class="modal-product-footer">
+                <span class="modal-total" id="modalTotal"></span>
+                <button class="modal-add-btn" id="modalAddBtn">
+                    <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                    <span data-i18n="menu_page.add_cart">Add to cart</span>
+                </button>
             </div>
-        </div>
-        
-        <!-- Footer fijo -->
-        <div class="modal-product-footer">
-            <button class="modal-add-btn">
-                <i class="fas fa-shopping-cart"></i>
-                Añadir - RD$ 195
-            </button>
-            <button class="modal-customize-btn">
-                <i class="fas fa-star"></i>
-                Favorito
-            </button>
+
         </div>
     </div>
-</div>
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
-    <script src="js/menu.js"></script>
+
+    <!-- ═══════════════════════════════════════
+     STORE MODAL
+═══════════════════════════════════════ -->
+    <div class="store-modal" id="storeModal" role="dialog" aria-modal="true" aria-labelledby="storeModalTitle">
+        <div class="store-modal-box">
+            <h2 class="store-modal-title" id="storeModalTitle">Select your store</h2>
+            <p class="store-modal-sub">Choose where you'd like to pick up your order</p>
+            <div class="store-list" id="storeList">
+                <div class="skeleton" style="height:72px;border-radius:8px;"></div>
+                <div class="skeleton" style="height:72px;border-radius:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open categories" style="display:none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Toast container -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+    <script type="module">
+        import {
+            sb, getSettings, getCurrentLang,
+            formatPrice, addToCart, updateCartBadge,
+            sanitize, sanitizeInput
+        } from './js/supabase.js';
+        import { initI18n, t } from './js/i18n.js';
+
+        // ── Init ──────────────────────────────────
+        initI18n();
+        updateCartBadge();
+
+        const settings = await getSettings();
+        let categories = [];
+        let products = {};   // { [categoryId]: Product[] }
+        let selectedStore = JSON.parse(localStorage.getItem('atalia_store') || 'null');
+        let currentProduct = null;
+        let currentQty = 1;
+        let selectedSize = null;
+        let selectedExtras = [];
+        let searchQuery = '';
+
+        // ── Load data ────────────────────────────
+        await Promise.all([loadCategories(), loadStores()]);
+
+        // ── Load categories & products ───────────
+        async function loadCategories() {
+            const lang = getCurrentLang();
+            const { data: cats } = await sb
+                .from('categories')
+                .select('*')
+                .eq('active', true)
+                .order('sort_order');
+
+            if (!cats?.length) {
+                document.getElementById('categoriesContainer').innerHTML =
+                    `<div class="search-empty"><i class="fas fa-coffee"></i><p>No categories available yet.</p></div>`;
+                return;
+            }
+
+            categories = cats;
+
+            // Build sidebar
+            buildSidebar(cats, lang);
+
+            // Load all products for all categories
+            const catIds = cats.map(c => c.id);
+            const { data: prods } = await sb
+                .from('products')
+                .select('*, product_sizes(*), product_extras(*), product_nutritional_info(*)')
+                .in('category_id', catIds)
+                .eq('active', true)
+                .order('sort_order');
+
+            // Group by category
+            cats.forEach(c => { products[c.id] = []; });
+            (prods || []).forEach(p => {
+                if (products[p.category_id]) products[p.category_id].push(p);
+            });
+
+            // Build categories HTML
+            buildCategoriesHTML(cats, lang);
+
+            // Activate first
+            if (cats[0]) activateCategory(cats[0].id);
+        }
+
+        // ── Sidebar ──────────────────────────────
+        function buildSidebar(cats, lang) {
+            const groups = {};
+            cats.forEach(c => {
+                const g = c.group_name || 'Menu';
+                if (!groups[g]) groups[g] = [];
+                groups[g].push(c);
+            });
+
+            const list = document.getElementById('sidebarList');
+            list.innerHTML = Object.entries(groups).map(([group, items]) => `
+    <div class="sidebar-section">
+      <div class="sidebar-title">${sanitize(group)}</div>
+      <ul class="sidebar-list">
+        ${items.map(c => `
+          <li>
+            <a href="#cat-${sanitize(c.id)}"
+               class="sidebar-link"
+               data-cat="${sanitize(c.id)}"
+               onclick="onSidebarClick(event,'${sanitize(c.id)}')">
+              <i class="${sanitize(c.icon || 'fas fa-circle')}" aria-hidden="true"></i>
+              ${sanitize(lang === 'es' && c.name_es ? c.name_es : c.name_en)}
+            </a>
+          </li>`).join('')}
+      </ul>
+    </div>`
+            ).join('');
+        }
+
+        // ── Categories HTML ───────────────────────
+        function buildCategoriesHTML(cats, lang) {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = cats.map(c => {
+                const catProducts = products[c.id] || [];
+                const name = lang === 'es' && c.name_es ? c.name_es : c.name_en;
+                const desc = lang === 'es' && c.description_es ? c.description_es : (c.description_en || '');
+
+                return `
+      <section class="menu-category" id="cat-${sanitize(c.id)}" data-cat="${sanitize(c.id)}">
+        <div class="category-header">
+          <h2 class="category-title">${sanitize(name)}</h2>
+          ${desc ? `<p class="category-description">${sanitize(desc)}</p>` : ''}
+        </div>
+        <div class="category-grid" id="grid-${sanitize(c.id)}">
+          ${catProducts.length
+                        ? catProducts.map(p => buildProductCard(p, lang)).join('')
+                        : `<p class="no-items-message" style="grid-column:1/-1;">${t('menu.no_products')}</p>`
+                    }
+        </div>
+      </section>`;
+            }).join('');
+
+            // Wire add buttons (quick add without modal)
+            container.querySelectorAll('.product-add-compact').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    const catId = btn.dataset.cat;
+                    const p = (products[catId] || []).find(x => x.id === id);
+                    if (!p) return;
+
+                    // If has sizes or extras → open modal
+                    if (p.product_sizes?.length || p.product_extras?.length) {
+                        openProductModal(p);
+                        return;
+                    }
+
+                    // Direct add
+                    quickAdd(p, btn);
+                });
+            });
+
+            // Wire card clicks → modal
+            container.querySelectorAll('.product-card-compact').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.dataset.id;
+                    const catId = card.dataset.cat;
+                    const p = (products[catId] || []).find(x => x.id === id);
+                    if (p) openProductModal(p);
+                });
+            });
+        }
+
+        function buildProductCard(p, lang) {
+            const name = sanitize(lang === 'es' && p.name_es ? p.name_es : p.name_en);
+            const price = formatPrice(p.price, settings);
+            const soldOut = p.stock_enabled && !p.in_stock;
+
+            return `
+    <article class="product-card-compact"
+             data-id="${sanitize(p.id)}"
+             data-cat="${sanitize(p.category_id)}"
+             role="button" tabindex="0"
+             aria-label="View ${name}">
+      <div class="product-image-compact ${soldOut ? 'sold-out' : ''}">
+        ${p.image_url
+                    ? `<img src="${sanitize(p.image_url)}" alt="${name}" loading="lazy"
+                  onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);\'>☕</div>'">`
+                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);">☕</div>`
+                }
+        ${p.featured ? `<span class="product-badge-compact">⭐</span>` : ''}
+      </div>
+      <div class="product-content-compact">
+        <h3 class="product-name-compact">${name}</h3>
+        <div class="product-price-compact">${price}</div>
+        <button
+          class="product-add-compact"
+          data-id="${sanitize(p.id)}"
+          data-cat="${sanitize(p.category_id)}"
+          ${soldOut ? 'disabled' : ''}
+          aria-label="Add ${name}">
+          ${soldOut ? t('menu.sold_out') : `<i class="fas fa-plus" aria-hidden="true"></i> ${t('menu.add')}`}
+        </button>
+      </div>
+    </article>`;
+        }
+
+        // ── Quick add (no sizes/extras) ───────────
+        function quickAdd(p, btn) {
+            if (!selectedStore) {
+                showToast(t('menu_page.select_store'), '');
+                openStoreModal();
+                return;
+            }
+            addToCart({
+                id: p.id, name_en: p.name_en, name_es: p.name_es,
+                price: p.price, image_url: p.image_url,
+                category_id: p.category_id, size: null, extras: [], qty: 1,
+            });
+            updateCartBadge();
+            const lang = getCurrentLang();
+            const name = lang === 'es' && p.name_es ? p.name_es : p.name_en;
+            showToast(`${sanitize(name)} ${t('menu.added')}`, 'success');
+            btn.innerHTML = `<i class="fas fa-check"></i> ${t('menu.added')}`;
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fas fa-plus"></i> ${t('menu.add')}`;
+                btn.disabled = false;
+            }, 1200);
+        }
+
+        // ── Category activation ───────────────────
+        function activateCategory(catId) {
+            document.querySelectorAll('.menu-category').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            const sec = document.getElementById(`cat-${catId}`);
+            const link = document.querySelector(`.sidebar-link[data-cat="${catId}"]`);
+            sec?.classList.add('active');
+            link?.classList.add('active');
+        }
+
+        window.onSidebarClick = function (e, catId) {
+            e.preventDefault();
+            activateCategory(catId);
+            const sec = document.getElementById(`cat-${catId}`);
+            sec?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Close mobile sidebar
+            document.getElementById('menuSidebar').classList.remove('active');
+        };
+
+        // ── Scroll spy ────────────────────────────
+        const menuContent = document.getElementById('menuContent');
+        menuContent.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.menu-category');
+            let active = null;
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top <= 200) active = sec.dataset.cat;
+            });
+            if (active) {
+                document.querySelectorAll('.sidebar-link').forEach(l => {
+                    l.classList.toggle('active', l.dataset.cat === active);
+                });
+            }
+        }, { passive: true });
+
+        // ── Search ────────────────────────────────
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+
+        searchInput.addEventListener('input', () => {
+            searchQuery = sanitizeInput(searchInput.value);
+            searchClear.classList.toggle('show', searchQuery.length > 0);
+            renderSearch();
+        });
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            searchClear.classList.remove('show');
+            renderSearch();
+        });
+
+        function renderSearch() {
+            const lang = getCurrentLang();
+            if (!searchQuery) {
+                // Restore all categories
+                document.querySelectorAll('.menu-category').forEach(s => {
+                    s.style.display = '';
+                    s.querySelectorAll('.product-card-compact').forEach(c => c.style.display = '');
+                });
+                document.getElementById('sidebarList').style.opacity = '1';
+                return;
+            }
+            const q = searchQuery.toLowerCase();
+            let hasResults = false;
+
+            document.querySelectorAll('.menu-category').forEach(sec => {
+                const catId = sec.dataset.cat;
+                const catProds = products[catId] || [];
+                let catHasResults = false;
+
+                sec.querySelectorAll('.product-card-compact').forEach(card => {
+                    const id = card.dataset.id;
+                    const p = catProds.find(x => x.id === id);
+                    if (!p) { card.style.display = 'none'; return; }
+                    const name = (lang === 'es' && p.name_es ? p.name_es : p.name_en) || '';
+                    const desc = (lang === 'es' && p.description_es ? p.description_es : (p.description_en || ''));
+                    const match = name.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
+                    card.style.display = match ? '' : 'none';
+                    if (match) { catHasResults = true; hasResults = true; }
+                });
+
+                sec.style.display = catHasResults ? '' : 'none';
+            });
+
+            if (!hasResults) {
+                // Show empty state in first visible section
+                document.querySelectorAll('.menu-category').forEach((s, i) => {
+                    if (i === 0) {
+                        s.style.display = '';
+                        s.querySelector('.category-grid').innerHTML = `
+          <div class="search-empty" style="grid-column:1/-1;">
+            <i class="fas fa-search"></i>
+            <p>${t('menu_page.no_results')}</p>
+          </div>`;
+                    }
+                });
+            }
+        }
+
+        // ── Product Modal ─────────────────────────
+        window.openProductModal = function (p) {
+            currentProduct = p;
+            currentQty = 1;
+            selectedSize = null;
+            selectedExtras = [];
+
+            const lang = getCurrentLang();
+            const name = lang === 'es' && p.name_es ? p.name_es : p.name_en;
+            const desc = lang === 'es' && p.description_es ? p.description_es : (p.description_en || '');
+            const price = formatPrice(p.price, settings);
+
+            document.getElementById('modalProductImg').src = p.image_url || 'images/hero.png';
+            document.getElementById('modalProductImg').alt = sanitize(name);
+            document.getElementById('modalProductName').textContent = sanitize(name);
+            document.getElementById('modalProductPrice').textContent = price;
+            document.getElementById('modalProductDesc').textContent = sanitize(desc);
+
+            // Nutrition
+            const nutContainer = document.getElementById('modalNutrition');
+            const info = p.product_nutritional_info || [];
+            nutContainer.innerHTML = info.map(n => `
+    <span class="nutrition-pill">
+      <strong>${sanitize(lang === 'es' && n.label_es ? n.label_es : n.label_en)}:</strong>
+      ${sanitize(n.value)}
+    </span>`).join('');
+
+            // Sizes
+            const sizes = p.product_sizes?.filter(s => s.active) || [];
+            const sizeSec = document.getElementById('sizesSection');
+            if (sizes.length) {
+                sizeSec.style.display = '';
+                document.getElementById('sizesContainer').innerHTML = sizes.map((s, i) => `
+      <button
+        class="customization-option ${i === 0 ? 'selected' : ''}"
+        data-size-id="${sanitize(s.id)}"
+        data-price="${s.price_modifier || 0}"
+        data-name="${sanitize(lang === 'es' && s.name_es ? s.name_es : s.name_en)}"
+        onclick="selectSize(this)">
+        ${sanitize(lang === 'es' && s.name_es ? s.name_es : s.name_en)}
+        ${s.price_modifier > 0 ? `<small>+${formatPrice(s.price_modifier, settings)}</small>` : ''}
+      </button>`).join('');
+                // Default first size
+                if (sizes[0]) {
+                    selectedSize = { id: sizes[0].id, name: sizes[0].name_en, price: sizes[0].price_modifier || 0 };
+                }
+            } else {
+                sizeSec.style.display = 'none';
+            }
+
+            // Extras
+            const extras = p.product_extras?.filter(e => e.active) || [];
+            const extraSec = document.getElementById('extrasSection');
+            if (extras.length) {
+                extraSec.style.display = '';
+                document.getElementById('extrasContainer').innerHTML = extras.map(e => `
+      <button
+        class="customization-option"
+        data-extra-id="${sanitize(e.id)}"
+        data-price="${e.price || 0}"
+        data-name="${sanitize(lang === 'es' && e.name_es ? e.name_es : e.name_en)}"
+        onclick="toggleExtra(this)">
+        ${sanitize(lang === 'es' && e.name_es ? e.name_es : e.name_en)}
+        ${e.price > 0 ? `<small>+${formatPrice(e.price, settings)}</small>` : ''}
+      </button>`).join('');
+            } else {
+                extraSec.style.display = 'none';
+            }
+
+            // Quantity
+            document.getElementById('qtyDisplay').textContent = '1';
+            updateModalTotal();
+
+            // Open
+            document.getElementById('productModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeProductModal = function () {
+            document.getElementById('productModal').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.selectSize = function (btn) {
+            document.querySelectorAll('#sizesContainer .customization-option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedSize = {
+                id: btn.dataset.sizeId,
+                name: btn.dataset.name,
+                price: parseFloat(btn.dataset.price) || 0,
+            };
+            updateModalTotal();
+        };
+
+        window.toggleExtra = function (btn) {
+            btn.classList.toggle('selected');
+            const id = btn.dataset.extraId;
+            const name = btn.dataset.name;
+            const price = parseFloat(btn.dataset.price) || 0;
+            const idx = selectedExtras.findIndex(e => e.id === id);
+            if (idx > -1) selectedExtras.splice(idx, 1);
+            else selectedExtras.push({ id, name, price });
+            updateModalTotal();
+        };
+
+        // Quantity buttons
+        document.getElementById('qtyMinus').addEventListener('click', () => {
+            currentQty = Math.max(1, currentQty - 1);
+            document.getElementById('qtyDisplay').textContent = currentQty;
+            updateModalTotal();
+        });
+        document.getElementById('qtyPlus').addEventListener('click', () => {
+            currentQty = Math.min(20, currentQty + 1);
+            document.getElementById('qtyDisplay').textContent = currentQty;
+            updateModalTotal();
+        });
+
+        function updateModalTotal() {
+            if (!currentProduct) return;
+            const base = parseFloat(currentProduct.price) || 0;
+            const sizeMod = selectedSize?.price || 0;
+            const extrasMod = selectedExtras.reduce((s, e) => s + (e.price || 0), 0);
+            const unit = base + sizeMod + extrasMod;
+            const total = unit * currentQty;
+            document.getElementById('modalTotal').textContent = formatPrice(total, settings);
+        }
+
+        // Add to cart from modal
+        document.getElementById('modalAddBtn').addEventListener('click', () => {
+            if (!currentProduct) return;
+            if (!selectedStore) {
+                showToast(t('menu_page.select_store'), '');
+                closeProductModal();
+                openStoreModal();
+                return;
+            }
+
+            const lang = getCurrentLang();
+            const base = parseFloat(currentProduct.price) || 0;
+            const sizeMod = selectedSize?.price || 0;
+            const extrasMod = selectedExtras.reduce((s, e) => s + (e.price || 0), 0);
+
+            addToCart({
+                id: currentProduct.id,
+                name_en: currentProduct.name_en,
+                name_es: currentProduct.name_es,
+                price: base + sizeMod + extrasMod,
+                image_url: currentProduct.image_url,
+                category_id: currentProduct.category_id,
+                size: selectedSize?.name || null,
+                extras: selectedExtras,
+                qty: currentQty,
+            });
+
+            updateCartBadge();
+            closeProductModal();
+            const name = lang === 'es' && currentProduct.name_es ? currentProduct.name_es : currentProduct.name_en;
+            showToast(`${sanitize(name)} ${t('menu.added')}`, 'success');
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('productModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('productModal')) closeProductModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeProductModal();
+        });
+
+        // ── Stores ───────────────────────────────
+        async function loadStores() {
+            const { data: stores } = await sb
+                .from('stores')
+                .select('*, pickup_locations(*)')
+                .eq('active', true)
+                .order('created_at');
+
+            const list = document.getElementById('storeList');
+            if (!stores?.length) {
+                list.innerHTML = `<p style="color:var(--text-light);text-align:center;padding:20px;">No stores available yet.</p>`;
+                return;
+            }
+
+            list.innerHTML = stores.map(s => `
+    <div class="store-item ${selectedStore?.id === s.id ? 'selected' : ''}"
+         onclick="selectStore(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+      <div class="store-item-icon"><i class="fas fa-store"></i></div>
+      <div>
+        <div class="store-item-name">${sanitize(s.name)}</div>
+        <div class="store-item-addr">
+          ${[s.address, s.city, s.state].filter(Boolean).map(sanitize).join(', ')}
+        </div>
+      </div>
+      <i class="fas fa-check store-item-check"></i>
+    </div>`).join('');
+
+            // Auto-open if no store selected
+            if (!selectedStore) openStoreModal();
+            else updateStoreBtnLabel();
+        }
+
+        window.selectStore = function (store) {
+            selectedStore = store;
+            localStorage.setItem('atalia_store', JSON.stringify(store));
+            closeStoreModal();
+            updateStoreBtnLabel();
+            // Refresh store list UI
+            document.querySelectorAll('.store-item').forEach(el => el.classList.remove('selected'));
+            showToast(`Store: ${sanitize(store.name)}`, 'success');
+        };
+
+        window.openStoreModal = function () {
+            document.getElementById('storeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeStoreModal = function () {
+            document.getElementById('storeModal').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        document.getElementById('storeModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('storeModal')) closeStoreModal();
+        });
+
+        function updateStoreBtnLabel() {
+            const lbl = document.getElementById('storeBtnLabel');
+            const btn = document.getElementById('storeBtn');
+            if (selectedStore) {
+                lbl.textContent = selectedStore.name;
+                btn.classList.add('selected');
+            }
+        }
+
+        // ── Hamburger nav ────────────────────────
+        document.getElementById('hamburger').addEventListener('click', () => {
+            const nav = document.getElementById('nav-links');
+            const open = nav.classList.toggle('active');
+            document.getElementById('hamburger').setAttribute('aria-expanded', open);
+        });
+
+        // ── Mobile sidebar toggle ────────────────
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('menuSidebar');
+        if (window.innerWidth <= 768) sidebarToggle.style.display = 'flex';
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        document.addEventListener('click', e => {
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // ── Toast ────────────────────────────────
+        function showToast(msg, type = '') {
+            const c = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'success'
+                ? `<i class="fas fa-check-circle" aria-hidden="true"></i> ${sanitize(msg)}`
+                : sanitize(msg);
+            c.appendChild(toast);
+            setTimeout(() => toast.remove(), 2600);
+        }
+
+        // ── Cart badge sync ──────────────────────
+        window.addEventListener('atalia:cart-updated', updateCartBadge);
+    </script>
+
 </body>
+
 </html>
