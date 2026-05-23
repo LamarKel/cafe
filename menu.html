@@ -759,6 +759,15 @@
         let selectedExtras = [];
         let searchQuery = '';
 
+        window.openStoreModal = function () {
+            document.getElementById('storeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeStoreModal = function () {
+            document.getElementById('storeModal').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
         // ── Load data ────────────────────────────
         await Promise.all([loadCategories(), loadStores()]);
 
@@ -1255,14 +1264,6 @@
             showToast(`Store: ${sanitize(store.name)}`, 'success');
         };
 
-        window.openStoreModal = function () {
-            document.getElementById('storeModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-        window.closeStoreModal = function () {
-            document.getElementById('storeModal').classList.remove('active');
-            document.body.style.overflow = '';
-        };
         document.getElementById('storeModal').addEventListener('click', e => {
             if (e.target === document.getElementById('storeModal')) closeStoreModal();
         });
