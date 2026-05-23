@@ -476,12 +476,8 @@
 
 .menu-category {
     margin-bottom: var(--space-xxl);
-    display: none;
-    animation: fadeIn 0.5s ease;
-}
-
-.menu-category.active {
     display: block;
+    animation: fadeIn 0.5s ease;
 }
 
 .category-header {
