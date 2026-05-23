@@ -895,17 +895,19 @@
                 });
             });
 
-            // Scroll spy: highlight sidebar as user scrolls through categories
-            const spy = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) activateCategory(e.target.dataset.cat);
+            // Scroll spy
+            const mc = document.getElementById('menuContent');
+            mc.addEventListener('scroll', () => {
+                const mcTop = mc.getBoundingClientRect().top;
+                const threshold = mc.clientHeight * 0.35;
+                let current = null;
+                container.querySelectorAll('.menu-category').forEach(sec => {
+                    if (sec.getBoundingClientRect().top - mcTop < threshold) {
+                        current = sec.dataset.cat;
+                    }
                 });
-            }, {
-                root: document.getElementById('menuContent'),
-                rootMargin: '0px 0px -80% 0px',
-                threshold: 0,
-            });
-            container.querySelectorAll('.menu-category').forEach(s => spy.observe(s));
+                if (current) activateCategory(current);
+            }, { passive: true });
         }
 
         function buildProductCard(p, lang) {

@@ -1497,6 +1497,7 @@
                     <th>Total</th>
                     <th>Status</th>
                     <th>Time</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody id="histbl">
@@ -1706,6 +1707,17 @@
       </div>
       <div class="mf"><button class="btn bg" onclick="closePromoModal()">Cancel</button><button class="btn bp" id="sprb"
           onclick="savePromo()"><i class="fas fa-save"></i>Save</button></div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAIL MODAL (History) -->
+  <div class="mo" id="moHistDet">
+    <div class="mbox" style="max-width:520px">
+      <div class="mh">
+        <h3 id="hdTitle">Order Detail</h3><button class="mcl" onclick="closeHistDetail()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="mb" id="hdBody" style="max-height:70vh;overflow-y:auto"></div>
+      <div class="mf"><button class="btn bg" onclick="closeHistDetail()">Close</button></div>
     </div>
   </div>
 
@@ -2014,9 +2026,9 @@
 
     // HISTORY
     async function loadHist() {
-      const { data: ords } = await sb.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
+      const { data: ords } = await sb.from('orders').select('*,order_items(*)').order('created_at', { ascending: false }).limit(100);
       const tb = document.getElementById('histbl');
-      if (!ords?.length) { tb.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mut)">No history yet.</td></tr>`; return }
+      if (!ords?.length) { tb.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--mut)">No history yet.</td></tr>`; return }
       tb.innerHTML = ords.map(o => {
         const t = new Date(o.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         return `<tr><td class="mono">${san(o.code)}</td><td>${san(o.customer_name)}</td>
@@ -2025,9 +2037,64 @@
       <td style="color:var(--acc);font-weight:600">${fmt(o.total)}</td>
       <td><span class="sbadge ${o.status}">${SL[o.status] || o.status}</span></td>
       <td class="mono" style="color:var(--mut)">${t}</td>
+      <td><button class="btn bsm bg" style="padding:4px 10px;font-size:11px" onclick="openHistDetail('${san(o.id)}')">Details</button></td>
     </tr>`;
       }).join('');
     }
+
+    async function openHistDetail(orderId) {
+      const { data: o } = await sb.from('orders').select('*,order_items(*)').eq('id', orderId).single();
+      if (!o) { toast('Order not found.', 'error'); return; }
+      const items = o.order_items || [];
+      const subtotal = items.reduce((s, i) => s + parseFloat(i.line_total || 0), 0);
+      const itemsHtml = items.length
+        ? items.map(i => `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--brd)">
+            <div>
+              <div style="font-weight:600;font-size:13px">${san(i.product_name_snapshot || '')}</div>
+              ${i.size ? `<div style="font-size:11px;color:var(--mut)">Size: ${san(i.size)}</div>` : ''}
+              ${i.extras_snapshot ? `<div style="font-size:11px;color:var(--mut)">Extras: ${san(i.extras_snapshot)}</div>` : ''}
+              ${i.special_instructions ? `<div style="font-size:11px;color:var(--acc)">Note: ${san(i.special_instructions)}</div>` : ''}
+            </div>
+            <div style="text-align:right;white-space:nowrap;margin-left:12px">
+              <div style="font-size:12px;color:var(--mut)">× ${i.quantity}</div>
+              <div style="font-weight:600">${fmt(i.line_total)}</div>
+            </div>
+          </div>`).join('')
+        : '<div style="color:var(--mut);font-size:13px;padding:8px 0">No items found.</div>';
+
+      const addr = o.delivery_address ? `<div style="font-size:12px;color:var(--mut);margin-top:4px">${san(o.delivery_address)}</div>` : '';
+      const notes = o.notes ? `<div style="margin-top:12px;padding:10px;background:rgba(255,255,255,.05);border-radius:8px;font-size:12px;color:var(--mut)"><strong>Notes:</strong> ${san(o.notes)}</div>` : '';
+      const tax = parseFloat(o.tax_amount || 0);
+      const delivery = parseFloat(o.delivery_fee || 0);
+      const discount = parseFloat(o.discount_amount || 0);
+
+      document.getElementById('hdTitle').textContent = `Order ${o.code}`;
+      document.getElementById('hdBody').innerHTML = `
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+          <span class="sbadge ${o.status}">${SL[o.status] || o.status}</span>
+          <span class="tbadge ${o.order_type}" style="font-size:10px">${o.order_type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
+          <span style="font-size:11px;color:var(--mut);margin-left:auto">${new Date(o.created_at).toLocaleString('en-US')}</span>
+        </div>
+        <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,.05);border-radius:8px">
+          <div style="font-weight:600;font-size:13px">${san(o.customer_name)}</div>
+          ${o.customer_phone ? `<div style="font-size:12px;color:var(--mut)">${san(o.customer_phone)}</div>` : ''}
+          ${o.customer_email ? `<div style="font-size:12px;color:var(--mut)">${san(o.customer_email)}</div>` : ''}
+          ${addr}
+        </div>
+        <div style="margin-bottom:4px">${itemsHtml}</div>
+        ${notes}
+        <div style="margin-top:14px;padding-top:12px;border-top:2px solid var(--brd)">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:4px"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+          ${tax ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:4px"><span>Tax</span><span>${fmt(tax)}</span></div>` : ''}
+          ${delivery ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:4px"><span>Delivery fee</span><span>${fmt(delivery)}</span></div>` : ''}
+          ${discount ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grn);margin-bottom:4px"><span>Discount</span><span>-${fmt(discount)}</span></div>` : ''}
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:6px"><span>Total</span><span style="color:var(--acc)">${fmt(o.total)}</span></div>
+          <div style="font-size:11px;color:var(--mut);margin-top:4px">${o.payment_method === 'card' ? '💳 Card' : '💵 Cash'}</div>
+        </div>`;
+      document.getElementById('moHistDet').classList.add('active');
+    }
+    function closeHistDetail() { document.getElementById('moHistDet').classList.remove('active'); }
     async function expCSV() {
       const { data: ords } = await sb.from('orders').select('*').order('created_at', { ascending: false });
       if (!ords?.length) { toast('No data.', 'error'); return }
