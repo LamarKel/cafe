@@ -1600,9 +1600,20 @@
           <div class="field ffull"><label>Descripción (Español)</label><textarea id="pd_es"
               placeholder="Describe el producto..."></textarea></div>
           <div class="field ffull">
-            <label>Image URL</label>
-            <input type="text" id="pi" placeholder="images/macchiato.jpg" oninput="prevImg()">
-            <div class="fhint">Relative path or full URL</div>
+            <label>Product Image</label>
+            <input type="text" id="pi" placeholder="Or paste a URL..." oninput="prevImg()" style="margin-bottom:8px;">
+
+            <!-- Upload button -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <label for="imgFile"
+                style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--surf2);border:1.5px solid var(--brd);border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;transition:border-color .2s;color:var(--wht);"
+                onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--brd)'">
+                <i class="fas fa-upload"></i> Upload image
+              </label>
+              <input type="file" id="imgFile" accept="image/*" style="display:none;" onchange="uploadImg(this)">
+              <span id="uploadStatus" style="font-size:11px;color:var(--mut);"></span>
+            </div>
+
             <img id="piP" class="ipreview" alt="Preview">
             <div class="ipph" id="piPh"><i class="fas fa-image" style="font-size:20px"></i><span>Image preview</span>
             </div>
@@ -1896,6 +1907,7 @@
         document.getElementById('pfeat').checked = !!p.featured; document.getElementById('pveg').checked = !!p.vegetarian;
         document.getElementById('ptrk').checked = !!p.stock_enabled; document.getElementById('pins').checked = p.in_stock !== false;
         prevImg();
+
         // Load existing sizes and extras
         document.getElementById('sizesList').innerHTML = '';
         document.getElementById('extrasList').innerHTML = '';
@@ -1921,6 +1933,48 @@
       const img = document.getElementById('piP'), ph = document.getElementById('piPh');
       if (url) { img.src = url; img.style.display = 'block'; ph.style.display = 'none'; img.onerror = () => { img.style.display = 'none'; ph.style.display = 'flex' } }
       else { img.style.display = 'none'; ph.style.display = 'flex' }
+    }
+    async function uploadImg(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      // Validate
+      if (!file.type.startsWith('image/')) {
+        toast('File must be an image.', 'error'); return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast('Image must be under 5MB.', 'error'); return;
+      }
+
+      const status = document.getElementById('uploadStatus');
+      status.textContent = 'Uploading...';
+
+      // Unique filename
+      const ext = file.name.split('.').pop();
+      const name = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+
+      const { data, error } = await sb.storage
+        .from('product-images')
+        .upload(name, file, { cacheControl: '3600', upsert: false });
+
+      if (error) {
+        status.textContent = 'Upload failed.';
+        toast('Upload error: ' + error.message, 'error');
+        return;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = sb.storage
+        .from('product-images')
+        .getPublicUrl(name);
+
+      // Set URL in field and preview
+      document.getElementById('pi').value = publicUrl;
+      prevImg();
+
+      status.textContent = '✅ Uploaded!';
+      setTimeout(() => status.textContent = '', 3000);
+      input.value = ''; // Reset file input
     }
     async function saveProd() {
       const name_en = sani(document.getElementById('pn_en').value);
