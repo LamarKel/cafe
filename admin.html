@@ -1846,7 +1846,7 @@
     async function loadProds() {
       document.getElementById('pgrid').innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
       const [{ data: prods }, { data: cats }] = await Promise.all([
-        sb.from('products').select('*,categories(name_en)').order('sort_order'),
+        sb.from('products').select('*, categories(name_en), product_images(image_url, is_primary)').order('sort_order'),
         sb.from('categories').select('*').eq('active', true).order('sort_order'),
       ]);
       allProds = prods || []; allCats = cats || []; renderCtabs(); renderProds();
@@ -1869,9 +1869,11 @@
       if (!ps.length) { g.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-coffee"></i><p>No products found.</p></div>`; return }
       g.innerHTML = ps.map(p => {
         const cn = p.categories?.name_en || allCats.find(c => c.id === p.category_id)?.name_en || '—';
+        const img = p.product_images?.find(i => i.is_primary)?.image_url
+          || p.product_images?.[0]?.image_url
+          || null;
         return `<div class="pcard ${p.active ? '' : 'off'}">
-      ${p.image_url ? `<img class="pthumb" src="${san(p.image_url)}" alt="${san(p.name_en)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="pph" style="display:none">☕</div>` : `<div class="pph">☕</div>`}
-      <div class="pbody">
+${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</div>`}      <div class="pbody">
         <div class="pname">${san(p.name_en)}${p.featured ? ' ⭐' : ''}</div>
         <div class="pdesc">${san(p.description_en || 'No description')}</div>
         <div class="pmeta"><div class="pprice">$${parseFloat(p.price).toFixed(2)}</div><div class="pcat">${san(cn)}</div></div>
@@ -1907,6 +1909,18 @@
         document.getElementById('pfeat').checked = !!p.featured; document.getElementById('pveg').checked = !!p.vegetarian;
         document.getElementById('ptrk').checked = !!p.stock_enabled; document.getElementById('pins').checked = p.in_stock !== false;
         prevImg();
+        // Load primary image
+        sb.from('product_images')
+          .select('image_url')
+          .eq('product_id', id)
+          .eq('is_primary', true)
+          .single()
+          .then(({ data: img }) => {
+            if (img?.image_url) {
+              document.getElementById('pi').value = img.image_url;
+              prevImg();
+            }
+          });
 
         // Load existing sizes and extras
         document.getElementById('sizesList').innerHTML = '';
@@ -1938,7 +1952,6 @@
       const file = input.files[0];
       if (!file) return;
 
-      // Validate
       if (!file.type.startsWith('image/')) {
         toast('File must be an image.', 'error'); return;
       }
@@ -1953,13 +1966,14 @@
       const ext = file.name.split('.').pop();
       const name = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
-      const { data, error } = await sb.storage
+      // Upload to Supabase Storage
+      const { error: upErr } = await sb.storage
         .from('product-images')
         .upload(name, file, { cacheControl: '3600', upsert: false });
 
-      if (error) {
+      if (upErr) {
         status.textContent = 'Upload failed.';
-        toast('Upload error: ' + error.message, 'error');
+        toast('Upload error: ' + upErr.message, 'error');
         return;
       }
 
@@ -1968,13 +1982,38 @@
         .from('product-images')
         .getPublicUrl(name);
 
-      // Set URL in field and preview
+      // Show preview immediately
       document.getElementById('pi').value = publicUrl;
       prevImg();
-
       status.textContent = '✅ Uploaded!';
       setTimeout(() => status.textContent = '', 3000);
-      input.value = ''; // Reset file input
+      input.value = '';
+
+      // If editing existing product, save to product_images now
+      if (editPId) {
+        await saveProductImage(editPId, publicUrl);
+      }
+      // If new product, URL is stored in pi field and saved in saveProd()
+    }
+
+    async function saveProductImage(productId, url, isPrimary = true) {
+      // If setting as primary, unset existing primary
+      if (isPrimary) {
+        await sb.from('product_images')
+          .update({ is_primary: false })
+          .eq('product_id', productId)
+          .eq('is_primary', true);
+      }
+
+      const { error } = await sb.from('product_images').insert({
+        product_id: productId,
+        image_url: url,
+        is_primary: isPrimary,
+        sort_order: 0,
+      });
+
+      if (error) { toast('Error saving image: ' + error.message, 'error'); return; }
+      toast('Image saved!', 'success');
     }
     async function saveProd() {
       const name_en = sani(document.getElementById('pn_en').value);
@@ -2003,6 +2042,13 @@
       btn.disabled = false;
       if (error) { toast('Error: ' + error.message, 'error'); return }
       toast(`"${san(name_en)}" ${editPId ? 'updated' : 'created'}.`, 'success');
+      // Save image to product_images if URL exists
+      const imgUrl = sani(document.getElementById('pi').value);
+      if (imgUrl) {
+        const productId = editPId || (await sb.from('products')
+          .select('id').eq('name_en', name_en).single()).data?.id;
+        if (productId) await saveProductImage(productId, imgUrl);
+      }
       // Save sizes
       const sizeRows = document.querySelectorAll('#sizesList > div');
       for (const row of sizeRows) {
