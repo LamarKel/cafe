@@ -1549,3 +1549,53 @@
     /* header aprox */
     overflow-y: auto;
 }
+
+/* ── MODAL FIX FINAL ── */
+.modal-product-content {
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: 90vh !important;
+    overflow: hidden !important;
+    border-radius: 20px !important;
+}
+
+.modal-product-header {
+    position: relative !important;
+    height: 200px !important;
+    min-height: 200px !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+}
+
+.modal-product-header img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    position: static !important;
+    animation: none !important;
+    background: none !important;
+}
+
+.modal-product-scrollable {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    max-height: none !important;
+    padding: 20px 24px 16px !important;
+}
+
+.modal-product-footer {
+    position: static !important;
+    flex-shrink: 0 !important;
+    padding: 14px 24px !important;
+    border-top: 1px solid var(--border-color) !important;
+    background: var(--light-color) !important;
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+}
+
+/* ── IMAGE FIX ── */
+.product-image-compact img {
+    animation: none !important;
+    background: none !important;
+}
