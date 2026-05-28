@@ -1941,7 +1941,11 @@
       };
       let error;
       if (editPId) { ({ error } = await sb.from('products').update(payload).eq('id', editPId)); }
-      else { ({ error } = await sb.from('products').insert({ ...payload, active: true })); }
+      else {
+        const { data: newProd, error: insErr } = await sb.from('products').insert({ ...payload, active: true }).select().single();
+        error = insErr;
+        if (newProd) editPId = newProd.id;
+      }
       btn.disabled = false;
       if (error) { toast('Error: ' + error.message, 'error'); return }
       toast(`"${san(name_en)}" ${editPId ? 'updated' : 'created'}.`, 'success');
