@@ -1621,6 +1621,24 @@
                   class="tsl"></span></label>In stock</label>
           </div>
         </div>
+
+        <!-- SIZES -->
+        <div class="field ffull" style="margin-top:8px;">
+          <label>Sizes</label>
+          <div id="sizesList" style="display:flex;flex-direction:column;gap:6px;margin-top:6px;"></div>
+          <button type="button" class="btn bg bsm" style="margin-top:8px;width:fit-content;" onclick="addSizeRow()">
+            <i class="fas fa-plus"></i> Add size
+          </button>
+        </div>
+
+        <!-- EXTRAS -->
+        <div class="field ffull" style="margin-top:8px;">
+          <label>Extras</label>
+          <div id="extrasList" style="display:flex;flex-direction:column;gap:6px;margin-top:6px;"></div>
+          <button type="button" class="btn bg bsm" style="margin-top:8px;width:fit-content;" onclick="addExtraRow()">
+            <i class="fas fa-plus"></i> Add extra
+          </button>
+        </div>
       </div>
       <div class="mf"><button class="btn bg" onclick="closeProdModal()">Cancel</button><button class="btn bp" id="spb"
           onclick="saveProd()"><i class="fas fa-save"></i>Save</button></div>
@@ -1714,7 +1732,8 @@
   <div class="mo" id="moHistDet">
     <div class="mbox" style="max-width:520px">
       <div class="mh">
-        <h3 id="hdTitle">Order Detail</h3><button class="mcl" onclick="closeHistDetail()"><i class="fas fa-times"></i></button>
+        <h3 id="hdTitle">Order Detail</h3><button class="mcl" onclick="closeHistDetail()"><i
+            class="fas fa-times"></i></button>
       </div>
       <div class="mb" id="hdBody" style="max-height:70vh;overflow-y:auto"></div>
       <div class="mf"><button class="btn bg" onclick="closeHistDetail()">Close</button></div>
@@ -1877,6 +1896,17 @@
         document.getElementById('pfeat').checked = !!p.featured; document.getElementById('pveg').checked = !!p.vegetarian;
         document.getElementById('ptrk').checked = !!p.stock_enabled; document.getElementById('pins').checked = p.in_stock !== false;
         prevImg();
+        // Load existing sizes and extras
+        document.getElementById('sizesList').innerHTML = '';
+        document.getElementById('extrasList').innerHTML = '';
+        if (id) {
+          sb.from('product_sizes').select('*').eq('product_id', id).then(({ data }) => {
+            (data || []).forEach(s => addSizeRow(s));
+          });
+          sb.from('product_extras').select('*').eq('product_id', id).then(({ data }) => {
+            (data || []).forEach(e => addExtraRow(e));
+          });
+        }
       } else {
         ['pn_en', 'pn_es', 'pp', 'pd_en', 'pd_es', 'pi', 'psort', 'pstock'].forEach(x => document.getElementById(x).value = '');
         ['pfeat', 'pveg', 'ptrk'].forEach(x => document.getElementById(x).checked = false);
@@ -1915,6 +1945,33 @@
       btn.disabled = false;
       if (error) { toast('Error: ' + error.message, 'error'); return }
       toast(`"${san(name_en)}" ${editPId ? 'updated' : 'created'}.`, 'success');
+      // Save sizes
+      const sizeRows = document.querySelectorAll('#sizesList > div');
+      for (const row of sizeRows) {
+        const name = sani(row.querySelector('.size-name').value);
+        const price = parseFloat(row.querySelector('.size-price').value) || 0;
+        if (!name) continue;
+        const existingId = row.dataset.sizeId;
+        if (existingId) {
+          await sb.from('product_sizes').update({ name_en: name, price_modifier: price }).eq('id', existingId);
+        } else {
+          await sb.from('product_sizes').insert({ product_id: editPId || savedId, name_en: name, price_modifier: price, active: true, sort_order: 0 });
+        }
+      }
+
+      // Save extras
+      const extraRows = document.querySelectorAll('#extrasList > div');
+      for (const row of extraRows) {
+        const name = sani(row.querySelector('.extra-name').value);
+        const price = parseFloat(row.querySelector('.extra-price').value) || 0;
+        if (!name) continue;
+        const existingId = row.dataset.extraId;
+        if (existingId) {
+          await sb.from('product_extras').update({ name_en: name, price: price }).eq('id', existingId);
+        } else {
+          await sb.from('product_extras').insert({ product_id: editPId, name_en: name, price: price, active: true, sort_order: 0 });
+        }
+      }
       closeProdModal(); await loadProds();
     }
 
@@ -2353,6 +2410,49 @@
       if (session) { user = session.user; initApp() }
       sb.auth.onAuthStateChange((_, session) => { if (!session && document.getElementById('app').classList.contains('show')) location.reload() });
     });
+    // ── SIZES ──────────────────────────────────
+    function addSizeRow(data = {}) {
+      const id = data.id || '';
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:6px;align-items:center;';
+      row.dataset.sizeId = id;
+      row.innerHTML = `
+    <input type="text" placeholder="Name (e.g. Small)"
+      value="${san(data.name_en || '')}"
+      style="flex:2;background:var(--surf2);border:1.5px solid var(--brd);border-radius:9px;padding:7px 10px;font-size:12px;color:var(--wht);outline:none;"
+      class="size-name">
+    <input type="number" placeholder="+$ modifier"
+      value="${data.price_modifier || 0}" min="0" step="0.01"
+      style="flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:9px;padding:7px 10px;font-size:12px;color:var(--wht);outline:none;"
+      class="size-price">
+    <button type="button" onclick="this.parentElement.remove()"
+      style="background:rgba(224,85,85,.15);border:none;border-radius:7px;padding:7px 10px;color:var(--red);cursor:pointer;font-size:12px;">
+      <i class="fas fa-trash"></i>
+    </button>`;
+      document.getElementById('sizesList').appendChild(row);
+    }
+
+    // ── EXTRAS ─────────────────────────────────
+    function addExtraRow(data = {}) {
+      const id = data.id || '';
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:6px;align-items:center;';
+      row.dataset.extraId = id;
+      row.innerHTML = `
+    <input type="text" placeholder="Name (e.g. Oat milk)"
+      value="${san(data.name_en || '')}"
+      style="flex:2;background:var(--surf2);border:1.5px solid var(--brd);border-radius:9px;padding:7px 10px;font-size:12px;color:var(--wht);outline:none;"
+      class="extra-name">
+    <input type="number" placeholder="+$ price"
+      value="${data.price || 0}" min="0" step="0.01"
+      style="flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:9px;padding:7px 10px;font-size:12px;color:var(--wht);outline:none;"
+      class="extra-price">
+    <button type="button" onclick="this.parentElement.remove()"
+      style="background:rgba(224,85,85,.15);border:none;border-radius:7px;padding:7px 10px;color:var(--red);cursor:pointer;font-size:12px;">
+      <i class="fas fa-trash"></i>
+    </button>`;
+      document.getElementById('extrasList').appendChild(row);
+    }
   </script>
 </body>
 
