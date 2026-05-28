@@ -795,7 +795,7 @@
             const catIds = cats.map(c => c.id);
             const { data: prods } = await sb
                 .from('products')
-                .select('*, product_sizes(*), product_extras(*), product_nutritional_info(*)')
+                .select('*, product_sizes(*), product_extras(*), product_nutritional_info(*), product_images(image_url, is_primary)')
                 .in('category_id', catIds)
                 .eq('active', true)
                 .order('sort_order');
@@ -914,6 +914,10 @@
             const name = sanitize(lang === 'es' && p.name_es ? p.name_es : p.name_en);
             const price = formatPrice(p.price, settings);
             const soldOut = p.stock_enabled && !p.in_stock;
+            const img = p.product_images?.find(i => i.is_primary)?.image_url
+                || p.product_images?.[0]?.image_url
+                || p.image_url
+                || null;
 
             return `
     <article class="product-card-compact"
@@ -922,11 +926,9 @@
              role="button" tabindex="0"
              aria-label="View ${name}">
       <div class="product-image-compact ${soldOut ? 'sold-out' : ''}">
-        ${p.image_url
-                    ? `<img src="${sanitize(p.image_url)}" alt="${name}" loading="lazy"
-                  onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);\'>☕</div>'">`
-                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);">☕</div>`
-                }
+     ${img ? `<img src="${sanitize(img)}" alt="${name}" loading="lazy"
+  onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);\'>☕</div>'">`
+                    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--accent-color);">☕</div>`}
         ${p.featured ? `<span class="product-badge-compact">⭐</span>` : ''}
       </div>
       <div class="product-content-compact">
@@ -1061,7 +1063,11 @@
             const desc = lang === 'es' && p.description_es ? p.description_es : (p.description_en || '');
             const price = formatPrice(p.price, settings);
 
-            document.getElementById('modalProductImg').src = p.image_url || 'images/hero.png';
+            const modalImg = p.product_images?.find(i => i.is_primary)?.image_url
+                || p.product_images?.[0]?.image_url
+                || p.image_url
+                || 'images/hero.png';
+            document.getElementById('modalProductImg').src = modalImg;
             document.getElementById('modalProductImg').alt = sanitize(name);
             document.getElementById('modalProductName').textContent = sanitize(name);
             document.getElementById('modalProductPrice').textContent = price;

@@ -1552,8 +1552,8 @@
 
 .modal-product-header {
     position: relative !important;
-    height: 200px !important;
-    min-height: 200px !important;
+    height: 160px !important;
+    min-height: 160px !important;
     flex-shrink: 0 !important;
     overflow: hidden !important;
 }
@@ -1562,6 +1562,7 @@
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    object-position: center center !important;
     position: static !important;
     animation: none !important;
     background: none !important;
