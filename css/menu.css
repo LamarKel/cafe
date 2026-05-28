@@ -1539,16 +1539,7 @@
     }
 }
 
-/* FIX: scroll real dentro del modal de tienda */
-#store-modal .modal-content {
-    max-height: 85vh;
-}
 
-#store-modal .modal-body {
-    max-height: calc(85vh - 80px);
-    /* header aprox */
-    overflow-y: auto;
-}
 
 /* ── MODAL FIX FINAL ── */
 .modal-product-content {
