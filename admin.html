@@ -2042,13 +2042,7 @@ ${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</di
       btn.disabled = false;
       if (error) { toast('Error: ' + error.message, 'error'); return }
       toast(`"${san(name_en)}" ${editPId ? 'updated' : 'created'}.`, 'success');
-      // Save image to product_images if URL exists
-      const imgUrl = sani(document.getElementById('pi').value);
-      if (imgUrl) {
-        const productId = editPId || (await sb.from('products')
-          .select('id').eq('name_en', name_en).single()).data?.id;
-        if (productId) await saveProductImage(productId, imgUrl);
-      }
+
       // Save sizes
       const sizeRows = document.querySelectorAll('#sizesList > div');
       for (const row of sizeRows) {
@@ -2162,7 +2156,7 @@ ${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</di
         const iH = (o.order_items || []).map(i => `<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-bottom:2px"><span style="color:var(--wht)">${san(i.product_name_snapshot || '')}${i.size ? ' · ' + san(i.size) : ''}</span><span>× ${i.quantity} — ${fmt(i.line_total)}</span></div>`).join('');
         const acts = (AL[o.status] || []).map(ns => `<button class="btn ${BC[ns] || 'bg'} bsm" onclick="updOrd('${san(o.id)}','${ns}','${san(o.code)}')">${BL[ns]}</button>`).join('');
         return `<div class="ocard">
-      <div class="oh"><span class="ocode">${san(o.code)}</span><span class="ocust">${san(o.customer_name)}</span>
+     <div class="ocard" onclick="openOrderDetail('${san(o.id)}')" style="cursor:pointer">
         <span class="tbadge ${o.order_type}">${o.order_type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
         <span class="sbadge ${o.status}">${SL[o.status] || o.status}</span>
         <span class="otime">${m < 1 ? 'Now' : m + ' min ago'}</span>
@@ -2556,6 +2550,171 @@ ${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</di
       <i class="fas fa-trash"></i>
     </button>`;
       document.getElementById('extrasList').appendChild(row);
+    }
+    async function openOrderDetail(orderId) {
+      const { data: o } = await sb
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('id', orderId)
+        .single();
+      if (!o) return;
+
+      const items = o.order_items || [];
+      const SL = { pending: 'Pending', preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered', cancelled: 'Cancelled' };
+
+      document.getElementById('hdTitle').textContent = `Order ${o.code}`;
+      document.getElementById('hdBody').innerHTML = `
+    <!-- Status bar -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px">
+      <span class="sbadge ${o.status}">${SL[o.status] || o.status}</span>
+      <span class="tbadge ${o.order_type}">${o.order_type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
+      <span style="font-size:11px;color:var(--mut);margin-left:auto">${new Date(o.created_at).toLocaleString('en-US')}</span>
+    </div>
+
+    <!-- Customer info -->
+    <div style="background:var(--surf2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:8px">Customer</div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px">${san(o.customer_name)}</div>
+      <div style="font-size:12px;color:var(--mut)">${san(o.customer_phone)}</div>
+      ${o.customer_email ? `<div style="font-size:12px;color:var(--mut)">${san(o.customer_email)}</div>` : ''}
+      ${o.address ? `<div style="font-size:12px;color:var(--mut);margin-top:4px">📍 ${san(o.address)}, ${san(o.city || '')} ${san(o.state || '')}</div>` : ''}
+      ${o.note ? `<div style="font-size:12px;color:var(--acc);margin-top:6px;padding:8px;background:rgba(200,169,126,.08);border-radius:6px">📝 ${san(o.note)}</div>` : ''}
+    </div>
+
+    <!-- Items -->
+    <div style="background:var(--surf2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:10px">Items</div>
+      ${items.map(i => `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--brd)">
+          <div>
+            <div style="font-weight:600;font-size:13px">${san(i.product_name_snapshot || '')}</div>
+            ${i.size ? `<div style="font-size:11px;color:var(--mut)">Size: ${san(i.size)}</div>` : ''}
+            ${i.extras ? `<div style="font-size:11px;color:var(--mut)">Extras: ${san(i.extras)}</div>` : ''}
+          </div>
+          <div style="text-align:right;white-space:nowrap;margin-left:12px">
+            <div style="font-size:11px;color:var(--mut)">× ${i.quantity}</div>
+            <div style="font-weight:700;color:var(--acc)">${fmt(i.line_total)}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Totals -->
+    <div style="background:var(--surf2);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
+      ${o.discount_amount > 0 ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grn);margin-bottom:6px"><span>Discount</span><span>-${fmt(o.discount_amount)}</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px"><span>${san(o.tax_label || 'Sales Tax')}</span><span>${fmt(o.tax_amount)}</span></div>
+      ${o.shipping_fee > 0 ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:6px"><span>Delivery</span><span>${fmt(o.shipping_fee)}</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;padding-top:8px;border-top:1px solid var(--brd);margin-top:4px">
+        <span>Total</span><span style="color:var(--acc)">${fmt(o.total)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--mut);margin-top:6px">${o.payment_method === 'card' ? '💳 Card' : '💵 Cash'} · ${o.payment_status || 'pending'}</div>
+    </div>
+
+    <!-- Print button -->
+    <button onclick="printTicket(${JSON.stringify(o).replace(/"/g, '&quot;')}, ${JSON.stringify(items).replace(/"/g, '&quot;')})"
+      class="btn bp" style="width:100%;justify-content:center;padding:12px">
+      <i class="fas fa-print"></i> Print ticket
+    </button>`;
+
+      document.getElementById('moHistDet').classList.add('show');
+    }
+
+    function closeHistDetail() {
+      document.getElementById('moHistDet').classList.remove('show');
+    }
+
+    function printTicket(o, items) {
+      const w = window.open('', '_blank', 'width=320,height=600');
+      const date = new Date(o.created_at).toLocaleString('en-US');
+
+      w.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    width: 80mm;
+    padding: 4mm;
+    color: #000;
+  }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .divider { border-top: 1px dashed #000; margin: 6px 0; }
+  .row { display: flex; justify-content: space-between; margin: 3px 0; }
+  .title { font-size: 18px; font-weight: bold; text-align: center; margin: 4px 0; }
+  .subtitle { font-size: 11px; text-align: center; color: #333; margin-bottom: 2px; }
+  .code { font-size: 20px; font-weight: bold; text-align: center; letter-spacing: 4px; margin: 6px 0; border: 2px solid #000; padding: 4px; }
+  .item-name { flex: 1; }
+  .item-qty { width: 24px; text-align: center; }
+  .item-price { width: 60px; text-align: right; }
+  .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-top: 4px; }
+  .footer { text-align: center; font-size: 10px; margin-top: 8px; }
+  @media print {
+    body { width: 80mm; }
+    button { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="title">Atalia Café</div>
+  <div class="subtitle">Order Receipt</div>
+  <div class="divider"></div>
+
+  <div class="code">${o.code}</div>
+  <div class="center" style="font-size:10px;margin-bottom:4px">${date}</div>
+  <div class="center" style="font-size:11px"><strong>${o.order_type === 'delivery' ? '🚗 DELIVERY' : '🏪 PICKUP'}</strong></div>
+
+  <div class="divider"></div>
+
+  <div class="bold" style="margin-bottom:4px">Customer:</div>
+  <div>${o.customer_name}</div>
+  <div style="font-size:11px;color:#333">${o.customer_phone}</div>
+  ${o.address ? `<div style="font-size:10px">${o.address}, ${o.city || ''} ${o.state || ''}</div>` : ''}
+  ${o.note ? `<div style="margin-top:4px;padding:4px;border:1px dashed #000;font-size:11px">Note: ${o.note}</div>` : ''}
+
+  <div class="divider"></div>
+
+  <div class="row bold">
+    <span class="item-name">Item</span>
+    <span class="item-qty">Qty</span>
+    <span class="item-price">Price</span>
+  </div>
+  <div class="divider"></div>
+
+  ${items.map(i => `
+    <div class="row">
+      <span class="item-name">${i.product_name_snapshot || ''}${i.size ? ' (' + i.size + ')' : ''}</span>
+      <span class="item-qty">${i.quantity}</span>
+      <span class="item-price">$${Number(i.line_total).toFixed(2)}</span>
+    </div>
+    ${i.extras ? `<div style="font-size:10px;color:#333;margin-left:4px">+ ${i.extras}</div>` : ''}
+  `).join('')}
+
+  <div class="divider"></div>
+
+  <div class="row"><span>Subtotal</span><span>$${Number(o.subtotal).toFixed(2)}</span></div>
+  ${o.discount_amount > 0 ? `<div class="row"><span>Discount</span><span>-$${Number(o.discount_amount).toFixed(2)}</span></div>` : ''}
+  <div class="row"><span>Tax</span><span>$${Number(o.tax_amount).toFixed(2)}</span></div>
+  ${o.shipping_fee > 0 ? `<div class="row"><span>Delivery</span><span>$${Number(o.shipping_fee).toFixed(2)}</span></div>` : ''}
+
+  <div class="divider"></div>
+  <div class="total-row"><span>TOTAL</span><span>$${Number(o.total).toFixed(2)}</span></div>
+  <div style="font-size:11px;margin-top:4px">${o.payment_method === 'card' ? 'Payment: Card' : 'Payment: Cash'}</div>
+
+  <div class="divider"></div>
+  <div class="footer">
+    Thank you for visiting Atalia Café!<br>
+    Come back soon ☕
+  </div>
+
+  <script>window.onload = () => window.print();<\/script>
+</body>
+</html>`);
+      w.document.close();
     }
   </script>
 </body>
