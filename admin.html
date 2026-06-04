@@ -2155,14 +2155,16 @@ ${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</di
         const m = Math.floor((Date.now() - new Date(o.created_at).getTime()) / 60000);
         const iH = (o.order_items || []).map(i => `<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-bottom:2px"><span style="color:var(--wht)">${san(i.product_name_snapshot || '')}${i.size ? ' · ' + san(i.size) : ''}</span><span>× ${i.quantity} — ${fmt(i.line_total)}</span></div>`).join('');
         const acts = (AL[o.status] || []).map(ns => `<button class="btn ${BC[ns] || 'bg'} bsm" onclick="updOrd('${san(o.id)}','${ns}','${san(o.code)}')">${BL[ns]}</button>`).join('');
-        return `<div class="ocard">
-     <div class="ocard" onclick="openOrderDetail('${san(o.id)}')" style="cursor:pointer">
+        return `<div class="ocard" onclick="openOrderDetail('${san(o.id)}')" style="cursor:pointer">
+      <div class="oh">
+        <span class="ocode">${san(o.code)}</span>
+        <span class="ocust">${san(o.customer_name)}</span>
         <span class="tbadge ${o.order_type}">${o.order_type === 'delivery' ? 'Delivery' : 'Pickup'}</span>
         <span class="sbadge ${o.status}">${SL[o.status] || o.status}</span>
         <span class="otime">${m < 1 ? 'Now' : m + ' min ago'}</span>
       </div>
       <div class="ob">${iH}${o.address ? `<div style="font-size:11px;color:var(--mut);margin-top:5px"><i class="fas fa-map-marker-alt" style="margin-right:3px"></i>${san(o.address)}${o.city ? ', ' + san(o.city) : ''}</div>` : ''}${o.note ? `<div style="font-size:11px;color:var(--mut);margin-top:3px"><i class="fas fa-sticky-note" style="margin-right:3px"></i>${san(o.note)}</div>` : ''}</div>
-      <div class="of">
+      <div class="of" onclick="event.stopPropagation()">
         <div><div class="otot">${fmt(o.total)}</div><div style="font-size:10px;color:var(--mut);margin-top:2px;font-family:var(--fm)"><i class="fas fa-${o.payment_method === 'card' ? 'credit-card' : 'money-bill-wave'}"></i> ${o.payment_method === 'card' ? 'Card' : 'Cash'}</div></div>
         <div style="display:flex;gap:5px;flex-wrap:wrap">${acts}</div>
       </div>
@@ -2471,7 +2473,7 @@ ${img ? `<img class="pthumb" src="${san(img)}" ...>` : `<div class="pph">☕</di
     }
 
     // CLOSE MODALS
-    ['moProd', 'moCat', 'moStore', 'moPromo', 'moConf'].forEach(id => {
+    ['moProd', 'moCat', 'moStore', 'moPromo', 'moConf', 'moHistDet'].forEach(id => {
       document.getElementById(id).addEventListener('click', e => { if (e.target.id === id) { closeProdModal(); closeCatModal(); closeStoreModal(); closePromoModal(); closeConf() } });
     });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeProdModal(); closeCatModal(); closeStoreModal(); closePromoModal(); closeConf() } });
